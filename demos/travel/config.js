@@ -1,22 +1,21 @@
-t360.init({
-	//width : 700,
-	//height: 400,
+T360_config = {
 	autoplay : false,
-	//feedUrl : 'http://tribal360.com/jwJsonParseFeed.php?feed=https://buzz60.com/b60-mrss/view/Sam%20Stella%20Zazoom%20Feed/unw3enu5g83fe5s84gle',
-	//feedUrl : 'feeder.php?feed=https://buzz60.com/b60-mrss/view/Sam%20Stella%20Zazoom%20Feed/unw3enu5g83fe5s84gle',
-	feedUrl : '../../assets/feeder.php?feed=http://travelbig.com/video-feed/',
-	companionArea : 't360_displayAd',
+	//feedUrl : 'http://tribal360.com/assets/feeder.php?feed=https://buzz60.com/b60-mrss/view/Sam%20Stella%20Zazoom%20Feed/unw3enu5g83fe5s84gle',
+	feedUrl : 'http://tribal360.com/assets/feeder.php?feed=http://travelbig.com/video-feed/',
+	displayAdContainer : 't360_display',
 	videoArea : 't360_video',
-	openx : '474222',
-	adapt : 'integration_test',
-	skin : '../../assets/skin/tc_skin.xml'
-});
+	vpaidFailover : true,
+	openxPixel : '483347',
+	openx : '474222', // PUBLISHER SPECIFIC, OpenX's 'auid' variable
+	adapt : 'spotxTest', // PUB SPECIFIC, need to figure out what parameter we want to use: 'site'?
+	//customPixel : 'http://ads.blutonic.com/imptr?id=4257&t=2'
+};
 
-// other variables needed
-// - adapt tag/key/id that's unique to each pub
-// - openX tag/key/id that's unique to each pub... this goes in the OX.addAdUnit(id) below
+(function(){
 
-// set up OpenX tag and target. they require a global variable, can't put this in a function, arrrgh
-var OX_4d6552943f5a4 = OX();
-OX_4d6552943f5a4.addAdUnit("474222");
-OX_4d6552943f5a4.setAdUnitSlotId("474222","t360_displayAd");
+	var s = document.createElement('script');
+	s.src = 'http://d2s1vwfhtsw5uw.cloudfront.net/assets/loader.min.js';
+	s.async = true;
+	document.getElementsByTagName('head')[0].appendChild(s);
+
+})();

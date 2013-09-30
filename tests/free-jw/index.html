@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Free JW account test</title>
+</head>
+<body>
+	<script src="http://jwpsrv.com/library/ZCPIMMiREeK7viIACqoQEQ.js"></script>
+	<div id="video"></div>
+	<div id="companion"></div>
+	<script>
+	player = jwplayer('video').setup({
+      height: 400,
+      width: 700,
+      primary: 'flash',
+      autostart: true,
+      playlist: [{
+        file: 'http://c368577.r77.cf1.rackcdn.com/7237596778682626812.mp4'
+      }],
+      plugins: {
+        'http://redir.adap.tv/redir/integrations/jw/adaptvjw6.swf' : {
+          key: 'integration_test',
+          companionid: 'companion'
+          //zid: 'inhouse_preroll'
+        }
+      },
+    });
+	</script>
+</body>
+</html>

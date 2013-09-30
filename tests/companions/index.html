@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>JW Adclock test</title>
+</head>
+<body>
+	<div id="video"></div>
+	<div id="companion"></div>
+	<div id="logs"></div>
+	<script type="text/javascript" src="http://tribal360.com/assets/jw67/jwplayer.js"></script>
+  <!--<script src="http://tribal360.com/assets/jwplayer.js"></script>-->
+	<script type="text/javascript">jwplayer.key="O4uKyOWAS48nIe/23zZ9t1+EqL+uT02HD7RZBg==";</script>
+	<script>
+	var player = jwplayer("video").setup({
+      height: 400,
+      width: 700,
+      primary: 'flash',
+      autostart: false,
+      playlist: [{
+        file: "http://c368577.r77.cf1.rackcdn.com/8485444321643352129.mp4",
+      },{
+        file: "http://c368577.r77.cf1.rackcdn.com/8485444321643352129.mp4",
+      },{
+        file: "http://c368577.r77.cf1.rackcdn.com/8485444321643352129.mp4",
+      }],
+      advertising: {
+        client: 'http://tribal360.com/assets/jw67/vast.js',
+        //client: 'vast',
+        //tag: 'http://t-ads.adap.tv/a/t/tribal360llc?artEid=vast_2_0&categories=1',
+        tag: 'http://t-ads.adap.tv/a/t/tribal360llc?artEid=vast_2_0_vpaid_failover&categories=spotxTest&cb=__timestamp__',
+        companiondiv: { id: 'companion', width: 300, height: 250 }
+      }
+    });
+  //var logs = document.getElementById('logs');
+
+	jwplayer().onAdClick(function(){
+    console.log('onAdClick');
+  });
+  player.onAdCompanions(function(e){
+    //logs.innerHTML = logs.innerHTML + '<br>onAdCompanions';
+    console.log('onAdCompanions');
+  });
+  player.onAdComplete(function(e){
+    //logs.innerHTML = logs.innerHTML + '<br>onAdComplete';
+    console.log('onAdComplete');
+  });
+  player.onAdError(function(e){
+    //logs.innerHTML = logs.innerHTML + '<br>onAdError';
+    console.log('onAdError');
+  });
+  player.onAdImpression(function(e){
+    //logs.innerHTML = logs.innerHTML + '<br>onAdImpression';
+    console.log('onAdImpression');
+  });
+
+	</script>
+
+</body>
+</html>

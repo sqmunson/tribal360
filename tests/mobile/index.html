@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>HTML5 Mobile Web In-Stream Example</title>
+        <meta name = "viewport" content = "initial-scale = 1.0">
+        <script type="text/javascript" src="http://redir.adap.tv/redir/javascript/jsvpaid.js"></script>
+        <script type="text/javascript">
+
+            var onBodyLoad = function() {
+
+                var environmentVars =
+                { maxWrapperLevels    : 5                                           // Maximum number of VAST wrapper redirects; default is 5.
+                , adTagTimeout        : 10                                          // Time in seconds to wait for the network to resolve the ad tag; default is 10s.
+                , videoTimeout        : 30                                          // Total in seconds time to wait for a video ad to show; default is 30s.
+                , videoSlot           : document.getElementById('existing-player') // Id of existing HTML5 video player; set this for the in-stream case, where Adap.tv will reuse specific HTML5 player. The video ad will retain the style of existing video, including width and height.
+                };
+
+                var baseAdTagUrl = "http://ads.adap.tv/a/t/integration_test";
+
+                var params = 
+                { pageUrl       : "http://www.adap.tv/" // Embedding page URL; either full URL or just domain.com.
+                , id            : "[VIDEO_ID]"          // Video id.
+                , title         : "[VIDEO_TITLE]"       // Video title.
+                , description   : "[VIDEO_DESCRPTION]"  // Video description.
+                , duration      : "[VIDEO_DURATION]"    // Video duration.
+                , categories    : "[CATEGORIES]"        // Categories, comma-separated.
+                };
+
+                var customParams =
+                { key1      : "value1" // Dummy key 1.
+                , key2      : "value2" // Dummy key 2.
+                , testkey1  : "ios_ri" // For integration test purposes.
+                };
+
+                var creativeData =
+                { adTagUrl   : __adaptv__.vpaid.constructAdTag(baseAdTagUrl, params, customParams)
+                }
+
+                var adaptvVPAIDAd = new __adaptv__.vpaid.VPAIDAd();
+
+                adaptvVPAIDAd.subscribe('AdLoaded', function() {adaptvVPAIDAd.startAd();});
+                adaptvVPAIDAd.subscribe('AdError', function(e) {console.log(e.type + '! Error code: ' + e.data.errorCode + '. Error message: ' + e.data.errorMessage)});
+                
+                adaptvVPAIDAd.initAd(480, 320, -1, -1, creativeData, environmentVars);
+            }
+
+        </script>
+
+    </head>
+
+    <body onload="onBodyLoad()">
+        <div id="existing-player-div" align="center">
+            <video width="480" height="320" preload="metadata" poster="assets/elephants_dream_640x360.jpg" id="existing-player" style="width:480px; height:320px; margin-top:0px;">
+                <!-- html5-video sources -->
+                <source src="http://cdn.adap.tv/integration_test/Vincent-081110124715584-13503_1-122011141453375-82609_8-121712132719332-36500.MP4" type="video/mp4">
+            </video>
+        </div>
+    </body>
+</html>

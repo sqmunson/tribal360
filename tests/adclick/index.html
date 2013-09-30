@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>JW Adclock test</title>
+</head>
+<body>
+	<div id="video"></div>
+	<div id="companion"></div>
+	<div id="logs"></div>
+	<script type="text/javascript" src="http://d2s1vwfhtsw5uw.cloudfront.net/assets/jwplayer.js"></script>
+	<script type="text/javascript">jwplayer.key="I+QtMz5t07jsNSwGiKoHlyIWHyvy+MTCu/n6VyR3iN2VIWIRqAchSA==";</script>
+	<script>
+	var player = jwplayer("video").setup({
+      height: 400,
+      width: 700,
+      primary: 'flash',
+      autostart: false,
+      playlist: [{
+        file: "http://c368577.r77.cf1.rackcdn.com/8485444321643352129.mp4",
+      },{
+        file: "http://c368577.r77.cf1.rackcdn.com/8485444321643352129.mp4",
+      },{
+        file: "http://c368577.r77.cf1.rackcdn.com/8485444321643352129.mp4",
+      }],
+      advertising: {
+        client: 'vast',
+        tag: 'http://t-ads.adap.tv/a/t/tribal360llc',
+        companiondiv: { id: 'companion', width: 300, height: 250 }
+      }
+      // plugins: {
+      //   'http://redir.adap.tv/redir/integrations/jw/adaptvjw6.swf' : {
+      //     key: 'integration_test',
+      //     //companionid: 'companion'
+      //     //zid: 'inhouse_preroll'
+      //   }
+      // }
+    });
+	player.onAdCompanions(function(e){
+		var logs = document.getElementById('logs');
+		logs.innerHTML = logs.innerHTML + '<br>According to JW we have a companion ad:' + e.companions;
+	});
+
+	</script>
+
+</body>
+</html>

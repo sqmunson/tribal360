@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Test Display Ad</title>
+</head>
+<body>
+	<script src="http://ox-d.tribal360.com/w/1.0/jstag"></script>
+	<div id="testAdContainer" style="width:300px;height:250px;background-color:red;margin:0 auto;">
+		<div id="testAd"></div>
+	</div>
+	<script>
+		//OX.requestAd({"auid":"474222"});
+		var OX_4d6552943f5a4 = OX();
+  OX_4d6552943f5a4.addAdUnit("474222");
+  OX_4d6552943f5a4.setAdUnitSlotId("474222","testAd");
+  OX_4d6552943f5a4.load();
+		</script>
+	<span id="newAd" style="margin:0 auto;display:block;text-align:center;">get new ad</span>
+	<span id="delete" style="margin:0 auto;display:block;text-align:center;">clear</span>
+	<script type="text/javascript">
+		var newAd = document.getElementById('newAd');
+		newAd.onclick = getNewAd;
+		var deleteAd = document.getElementById('delete');
+		deleteAd.onclick = deleteArea;
+
+		function getNewAd() {
+			console.log('getNewAd()');
+			//OX.requestAd();
+			OX_4d6552943f5a4.setAdUnitSlotId("474222","testAd");
+  		OX_4d6552943f5a4.load();
+		}
+
+		function deleteArea() {
+			document.getElementById('testAdContainer').innerHTML='<div id="testAd"></div>';
+		}
+	</script>
+</body>
+</html>

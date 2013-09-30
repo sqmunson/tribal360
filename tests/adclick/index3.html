@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>JW Adclock test</title>
+</head>
+<body>
+	<div id="video"></div>
+	<div id="companion"></div>
+	<script type="text/javascript" src="http://d2s1vwfhtsw5uw.cloudfront.net/assets/jwplayer.js"></script>
+	<script type="text/javascript">jwplayer.key="I+QtMz5t07jsNSwGiKoHlyIWHyvy+MTCu/n6VyR3iN2VIWIRqAchSA==";</script>
+	<script>
+	var player = jwplayer("video").setup({
+      height: 400,
+      width: 700,
+      primary: 'flash',
+      autostart: false,
+      playlist: [{
+        file: "http://c368577.r77.cf1.rackcdn.com/8485444321643352129.mp4",
+      },{
+        file: "http://c368577.r77.cf1.rackcdn.com/8485444321643352129.mp4",
+      },{
+        file: "http://c368577.r77.cf1.rackcdn.com/8485444321643352129.mp4",
+      }],
+      // advertising: {
+      //   client: 'vast',
+      //   tag: 'http://t-ads.adap.tv/a/t/tribal360llc',
+      //   companiondiv: { id: 'companion', width: 300, height: 250 }
+      // }
+      plugins: {
+        'http://redir.adap.tv/redir/integrations/jw/adaptvjw6.swf' : {
+          key: 'integration_test',
+          //companionid: 'test'
+          //zid: 'inhouse_preroll'
+        }
+      }
+    });
+
+		player.onAdImpression(function() {
+			this.setControls(false);
+		});
+
+		player.onAdClick(function() {
+			this.setControls(true);
+			this.play();
+		});
+		player.onAdComplete(function(){
+			this.setControls(true);
+		});
+	</script>
+	<div id="one">Item 1</div>
+	<div id="two">Item 2</div>
+	<div id="three">Item 3</div>
+	<script>
+		document.getElementById('one').onclick = function() {
+			player.playlistItem(0);
+		}
+		document.getElementById('two').onclick = function() {
+			player.playlistItem(1);
+		}
+		document.getElementById('three').onclick = function() {
+			player.playlistItem(2);
+		}
+	</script>
+</body>
+</html>

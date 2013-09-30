@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Tribal 360: Travel</title>
+	<link href='http://fonts.googleapis.com/css?family=Oswald:400,300,700' rel='stylesheet' type='text/css'>
+	<style>
+		body {
+			font-family: Oswald;
+			width:700px;
+			margin: 0 auto;
+			margin-top: 40px;
+			position: relative;
+		}
+		h1 {
+			float: right;
+			padding-top: 20px;
+			color: #ed5000;
+			font-weight: 300;
+		}
+		span {
+		}
+		.topMeasure {
+			text-align: center;
+			margin: 20px 0;
+			border-bottom: 1px solid black;
+		}
+		.sideMeasure {
+			width: 20px;
+			position: absolute;
+			right: -52px;
+			bottom: -260px;
+			height: 660px;
+			vertical-align: middle;
+			border-left: 1px solid black;
+		}
+		span.measurement {
+			background-color: white;
+			padding: 0 10px;
+			position: relative;
+			top: 8px;
+		}
+		span.sideSpan {
+			margin-top: 320px;
+			display: block;
+			background-color: white;
+			padding: 10px 0;
+			position: relative;
+			right: 18px;
+		}
+		.logo {
+			width:100px;
+			float: left;
+		}
+		#header {
+			width: 700px;
+			height: 100px;
+		}
+
+	</style>
+</head>
+<body>
+	<div id="header">
+		<img class="logo" src="http://tribal360.com/assets/logo.jpg">
+		<h1>TRAVEL FEED</h1>
+	</div>
+	<div class="topMeasure">
+		<span class="measurement">700px</span>
+	</div>
+
+	<script type="text/javascript" src="embed.js" ></script>
+
+	<script type="text/javascript">
+
+		// Create a new, plain <span> element
+		var div = document.createElement("div");
+		var span = document.createElement('span');
+		div.className = 'sideMeasure';
+		span.className = 'sideSpan';
+		span.innerHTML = '660px';
+		div.appendChild(span);
+
+		// Get a reference to the element, before we want to insert the element
+		var target = document.getElementById("playlist");
+		// Get a reference to the parent element
+		var parentDiv = target.parentNode;
+
+		// Insert the new element into the DOM before sp2
+		parentDiv.insertBefore(div, target);
+	</script>
+
+	</div>
+
+
+</body>
+</html>

@@ -1,0 +1,40 @@
+roadandtrack:
+	openxPixel: 486416
+	openx: 484157
+	adapt: roadandtrack
+
+ladolcevitae:
+	openxPixel: 486406
+	openx: 484145
+	adapt: ladolcevitae
+
+highwaytofame:
+	openxPixel: 486420
+	openx: 484152
+	adapt: highwaytofame
+
+redbookmag:
+	openxPixel: 486422
+	openx: 486419
+	adapt: redbookmag
+
+newfacets:
+	openxPixel: 486423
+	openx: 484158
+	adapt: newfacets
+
+travelbase:
+	openxPixel: 486424
+	openx: 486421
+	adapt: travelbase
+
+
+
+
+
+
+TO DO:
+
+cosmo:
+	openxDisplay: 484131
+

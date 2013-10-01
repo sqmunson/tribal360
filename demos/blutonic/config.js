@@ -1,19 +1,19 @@
 T360_config = {
 	autoplay : false,
-	feedUrl : 'http://tribal360.com/assets/feeder.php?feed=https://buzz60.com/b60-mrss/view/Sam%20Stella%20Zazoom%20Feed/unw3enu5g83fe5s84gle',
-	//feedUrl : 'http://tribal360.com/assets/feeder.php?feed=http://travelbig.com/video-feed/',
-	companionArea : 't360_displayAd',
-	displayAdContainer : 't360_displayAdContainer',
+	feedUrl : 'http://tribal360.com/assets/feeder.php?feed=https://buzz60.com/b60-mrss/view/Tribal360%20Feed%20Entertainment/unw3enu5g83fe5s84gle',
+	displayAdContainer : 't360_display',
 	videoArea : 't360_video',
-	//openx : '474222',
-	//adapt : 'integration_test',
+	vpaidFailover : true,
+	openxPixel : '483347', // PUB SPECIFIC: Tribal360 will provide
+	openx : '474222', // PUB SPECIFIC: Tribal360 will provide
+	adapt : '3', // PUB SPECIFIC: Tribal360 will provide
 	customPixel : 'http://ads.blutonic.com/imptr?id=4257&t=2'
 };
 
 (function(){
 
 	var s = document.createElement('script');
-	s.src = 'http://d2s1vwfhtsw5uw.cloudfront.net/demos/blutonic/loader.min.js';
+	s.src = 'http://d2s1vwfhtsw5uw.cloudfront.net/assets/loader.min.js';
 	s.async = true;
 	document.getElementsByTagName('head')[0].appendChild(s);
 

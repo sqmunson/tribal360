@@ -1,5 +1,5 @@
 T360_config = {
-	autoplay : false,
+	autoplay : true,
 	//feedUrl : 'http://tribal360.com/assets/feeder.php?feed=https://buzz60.com/b60-mrss/view/Sam%20Stella%20Zazoom%20Feed/unw3enu5g83fe5s84gle',
 	feedUrl : 'http://tribal360.com/assets/feeder.php?feed=http://travelbig.com/video-feed/',
 	displayAdContainer : 't360_display',

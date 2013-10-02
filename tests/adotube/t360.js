@@ -126,28 +126,28 @@ var T360 = (function(){
         hide: logoHide,
         margin:'0'
       },
-      // advertising: {
-      //   client: 'vast',
-      //   schedule: {
-      //     myPreroll: {
-      //       offset: "pre",
-      //       tag: 'http://t-ads.adap.tv/a/t/tribal360llc?artEid='+vpaid+'&categories='+adapt+'&cb=__timestamp__',
-      //       companiondiv: { id: companionArea, width: 300, height: 250 },
-      //       admessage: 'Your video will resume in XX seconds.'
-      //     },
-      //     myOverlay: {
-      //       offset: 15,
-      //       tag: 'http://t-ads.adap.tv/a/t/tribal360llc?artEid='+vpaid+'&categories='+adapt+'&cb=__timestamp__',
-      //       type: "nonlinear"
-      //     }
-      //   }
-      // }
       advertising: {
         client: 'vast',
-        tag: 'http://t-ads.adap.tv/a/t/tribal360llc?artEid='+vpaid+'&categories='+adapt+'&cb=__timestamp__',
-        companiondiv: { id: companionArea, width: 300, height: 250 },
-        admessage: 'Your video will resume in XX seconds.'
+        schedule: {
+          // myPreroll: {
+          //   offset: "pre",
+          //   tag: 'http://t-ads.adap.tv/a/t/tribal360llc?artEid='+vpaid+'&categories='+adapt+'&cb=__timestamp__',
+          //   companiondiv: { id: companionArea, width: 300, height: 250 },
+          //   admessage: 'Your video will resume in XX seconds.'
+          // },
+          overlay: {
+            offset: 3,
+            tag: 'http://t-ads.adap.tv/a/t/tribal360llc?artEid='+vpaid+'&categories='+adapt+'&cb=__timestamp__',
+            type: "nonlinear"
+          }
+        }
       }
+      // advertising: {
+      //   client: 'vast',
+      //   tag: 'http://t-ads.adap.tv/a/t/tribal360llc?artEid='+vpaid+'&categories='+adapt+'&cb=__timestamp__',
+      //   companiondiv: { id: companionArea, width: 300, height: 250 },
+      //   admessage: 'Your video will resume in XX seconds.'
+      // }
     });
 
     // set player events via JW API

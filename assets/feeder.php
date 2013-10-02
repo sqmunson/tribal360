@@ -4,6 +4,8 @@ $uri = str_replace(' ', '%20', $_GET["feed"]);
 
 $xml = simplexml_load_string(file_get_contents($uri));
 
+
+
 $writer = new XMLWriter();
 $writer->openMemory();
 $writer->setIndent(true);
@@ -30,22 +32,23 @@ $writer->writeAttribute('xmlns:media', 'http://search.yahoo.com/mrss/');
 		$id = 0;
 
 		foreach ($xml->channel->item as $item) {
+			if($item->children('http://search.yahoo.com/mrss/')->thumbnail[0]->attributes()->url == '') {
+				continue;
+			}
 			$writer->startElement('item');
 				$writer->startElement('id');
 					$writer->text($id);
 				$writer->endElement();
 				$writer->startElement('title');
-					$writer->text($item->title);
+					if($item->title) {
+						$writer->text($item->title);
+					}
 				$writer->endElement();
 				$writer->startElement('description');
 					$writer->text($item->description);
 				$writer->endElement();
 				$writer->startElement('file');
-					//$writer->text('http://cdn.thinkcontra.com/wp-content/uploads/video/contra_tv_ci_12_fivestory_640x360.mp4');
 					$writer->text($item->children('http://search.yahoo.com/mrss/')->content->attributes()->url);
-					//$writer->writeAttribute('url', $item->children('http://search.yahoo.com/mrss/')->content->attributes()->url);
-					//$writer->writeAttribute('type', $item->children('http://search.yahoo.com/mrss/')->content->attributes()->type); NEEDS TO BE a supported format: 'video/mp4'
-					//$writer->writeAttribute('type', 'video/mp4');
 				$writer->endElement();
 				$writer->startElement('thumbnail');
 					$writer->text($item->children('http://search.yahoo.com/mrss/')->thumbnail[0]->attributes()->url);
@@ -63,16 +66,11 @@ $writer->writeAttribute('xmlns:media', 'http://search.yahoo.com/mrss/');
 
 	$writer->endElement(); // channel
 $writer->endDocument(); // root
-//echo $writer->outputMemory();
 
 
 class XmlToJson {
 
 	public function Parse ($url) {
-
-		//$uri = str_replace(' ', '%20', $_GET["feed"]);
-
-		//$fileContents= file_get_contents($uri);
 
 		$fileContents = str_replace(array("\n", "\r", "\t"), '', $url);
 
@@ -92,6 +90,5 @@ class XmlToJson {
 
 header('Content-type: application/json');
 header('Access-Control-Allow-Origin: *');
-//echo $_GET['jsonp'] . '('.XmlToJson::Parse($writer->outputMemory()).')';
 echo XmlToJson::Parse($writer->outputMemory());
 

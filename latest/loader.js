@@ -280,7 +280,7 @@ T360_loader(function(){
 						//console.log('loaded OpenX');
 
 						// LOAD t360 and then add MDot stuff and then CALL t360.init and pass in the config!!
-						loadJS('http://d2s1vwfhtsw5uw.cloudfront.net/assets/t360.min.js', function() {
+						loadJS('t360.js', function() {
 							//console.log('loaded t360');
 
 							var bim_div = document.createElement('div'),

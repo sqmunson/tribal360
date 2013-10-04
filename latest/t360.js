@@ -15,6 +15,8 @@ var T360 = (function(){
     playerWidth,
     playerHeight,
     companionArea,
+    displayArea,
+    openxContainer,
     isAdPlaying,
     skin,
     companion,
@@ -34,7 +36,8 @@ var T360 = (function(){
   me.init = function(config) {
     // config variables
     videoArea = config.videoArea || 't360_video';
-    companionArea = config.companionArea || 't360_displayAd';
+    companionArea = config.companionArea || 't360_companionArea';
+    displayArea = config.displayArea || 't360_displayArea';
     autoplay = config.autoplay || false;
     feedUrl = config.feedUrl || 'http://tribal360.com/assets/feeder.php?feed=https://buzz60.com/b60-mrss/view/Sam%20Stella%20Zazoom%20Feed/unw3enu5g83fe5s84gle';
     openx = config.openx || '474222';
@@ -56,6 +59,7 @@ var T360 = (function(){
     playerWidth = document.getElementById(videoArea).clientWidth;
     playerHeight = playerWidth*0.5625;
     // initial variables
+    openxContainer = 'openxContainer';
     currentIndex = 0;
     streamStarted = false;
     playlist = [];
@@ -72,11 +76,33 @@ var T360 = (function(){
   function debug() {
     //console.log(arguments);
   }
+  function debug_live() {
+    if (!window.console) console = {log: function() {}};
+    console.log(arguments);
+  }
 
   function kickThingsOff() {
     get(feedUrl, buildPlaylist, playlistLoadError);
     loadStyles();
+    addDisplayDivs();
     initOpenX();
+  }
+
+  function addDisplayDivs() {
+    var div = document.getElementById(displayAdContainer),
+      displayAd,
+      displayAdHolder,
+      companionAd;
+
+      displayAdHolder = document.createElement('div');
+      displayAdHolder.setAttribute('id',openxContainer);
+      displayAd = document.createElement('div');
+      displayAd.setAttribute('id',displayArea);
+      displayAdHolder.appendChild(displayAd);
+      companionAd = document.createElement('div');
+      companionAd.setAttribute('id',companionArea);
+      div.appendChild(displayAdHolder);
+      div.appendChild(companionAd);
   }
 
   function loadStyles() {
@@ -94,17 +120,17 @@ var T360 = (function(){
   }
 
   function initOpenX() {
-    debug('initOpenx');
-    var div = document.getElementById(displayAdContainer),
-      displayAd;
-    if(displayAdContainer) {
-      displayAd = document.createElement('div');
-      displayAd.setAttribute('id',companionArea);
-      div.appendChild(displayAd);
-    }
+    debug_live('initOpenx');
+    // var div = document.getElementById(displayAdContainer),
+    //   displayAd;
+    // if(displayAdContainer) {
+    //   displayAd = document.createElement('div');
+    //   displayAd.setAttribute('id',companionArea);
+    //   div.appendChild(displayAd);
+    // }
     OX_4d6552943f5a4 = OX();
     OX_4d6552943f5a4.addAdUnit(openx);
-    OX_4d6552943f5a4.setAdUnitSlotId(openx,companionArea);
+    OX_4d6552943f5a4.setAdUnitSlotId(openx,displayArea);
   }
 
   function instantiateDesktop() {
@@ -136,7 +162,9 @@ var T360 = (function(){
 
     // set player events via JW API
     player.onPlay(streamInitiationPixel);
-    player.onPlay(doAdCompleteStuff); // FIX FOR JW 6.6
+    player.onPlay(function(e) {
+      doAdCompleteStuff(e); // FIX FOR JW 6.6
+    });
     player.onPlaylistComplete(showNextVideo);
     player.onAdImpression(adHasStarted);
     //player.onAdComplete(adHasEnded); // this is a problem with JW 6.6
@@ -147,6 +175,7 @@ var T360 = (function(){
     player.onReady(function() {
       displayPlaylist();
       checkForAutoplay();
+      player.container.parentElement.setAttribute('style', player.container.parentElement.style.cssText+'clear:both;');
       addEvent(player.container.parentElement, 'mouseover', playlistMouseover);
       addEvent(player.container.parentElement, 'mouseout', playlistMouseout);
     });
@@ -175,28 +204,15 @@ var T360 = (function(){
       // make fake OpenX ad call and get impression pixel
       get(openxPixelUrl, openxPixelSuccess, openxPixelError);
 
-      // fire custom pixel is set in config
-      if(customPixel) {
-        if (customPixel && customPixel.toUpperCase().indexOf("HTTP://") === 0) {
-          var rnd = Math.round(Math.random()*100000);
-          var img = document.createElement('img');
-          img.style.visibility = "hidden";
-          img.style.position = "absolute";
-          img.width = "1";
-          img.height = "1";
-          img.src = customPixel;
-          //img.src = customPixel + ((url.indexOf('?') > 0) ? '&' : '?') + 'r' + rnd + '=' + rnd;
-          //var container = document.getElementById('imgContainer');
-          //document.appendChild(img);
-          player.container.parentElement.appendChild(img);
-        }
-      }
     }
   }
 
-  function doAdCompleteStuff() {
+  function doAdCompleteStuff(e) {
     debug('doAdCompleteStuff!');
-    adHasEnded();
+    //debug_live(e.oldstate);
+    if(e.oldstate === 'BUFFERING') {
+      adHasEnded();
+    }
   }
   function userClickedTheVideo() {
     if(isAdPlaying) {
@@ -211,16 +227,34 @@ var T360 = (function(){
 
   function fireOpenxPixel(xml) {
     var impression = xml.getElementsByTagName("Impression"),
-      img;
+      tribalImg,
+      customImg;
     if(impression.length) {
       if(impression[0].childNodes[0].data.toUpperCase().indexOf("HTTP://") === 0) {
-        img = document.createElement('img');
-        img.style.visibility = "hidden";
-        img.style.position = "absolute";
-        img.width = "1";
-        img.height = "1";
-        img.src = impression[0].childNodes[0].data;
-        player.container.parentElement.appendChild(img);
+        tribalImg = document.createElement('img');
+        tribalImg.style.visibility = "hidden";
+        tribalImg.style.position = "absolute";
+        tribalImg.width = "1";
+        tribalImg.height = "1";
+        tribalImg.src = impression[0].childNodes[0].data;
+        player.container.parentElement.appendChild(tribalImg);
+
+        // fire custom pixel is set in config
+        if(customPixel) {
+          if (customPixel && customPixel.toUpperCase().indexOf("HTTP://") === 0) {
+            //var rnd = Math.round(Math.random()*100000);
+            customImg = document.createElement('img');
+            customImg.style.visibility = "hidden";
+            customImg.style.position = "absolute";
+            customImg.width = "1";
+            customImg.height = "1";
+            customImg.src = customPixel;
+            //img.src = customPixel + ((url.indexOf('?') > 0) ? '&' : '?') + 'r' + rnd + '=' + rnd;
+            //var container = document.getElementById('imgContainer');
+            //document.appendChild(img);
+            player.container.parentElement.appendChild(customImg);
+          }
+        }
       }
     } else {
       // there was no impression found, we need to make another fake OpenX ad call and get impression pixel
@@ -269,7 +303,7 @@ var T360 = (function(){
       } else {
         if (xmlDoc.documentElement) {
           if (xmlDoc.documentElement.nodeName == "parsererror") {
-            console.log(xmlDoc.documentElement.childNodes[0].nodeValue);
+            //console.log(xmlDoc.documentElement.childNodes[0].nodeValue);
           }
         } else {
           debug("XML Parsing Error!");
@@ -399,14 +433,23 @@ var T360 = (function(){
   }
 
   function getNewAd() {
-    debug('getNewAd()');
-    OX_4d6552943f5a4.setAdUnitSlotId(openx,companionArea);
+    debug_live('getNewAd()');
+    //console.log(companionArea);
+    OX_4d6552943f5a4 = OX();
+    OX_4d6552943f5a4.addAdUnit(openx);
+    //OX_4d6552943f5a4.setAdUnitSlotId(openx,displayArea);
+
+    OX_4d6552943f5a4.setAdUnitSlotId(openx,displayArea);
     OX_4d6552943f5a4.load();
   }
 
   function resetDisplayArea() {
     // after an OpenX display ad we need to reset the ad area so that #displayAd is avilable for targeting
-    document.getElementById(displayAdContainer).innerHTML='<div id="'+companionArea+'"></div>';
+    document.getElementById(openxContainer).innerHTML='<div id="'+displayArea+'"></div>';
+  }
+
+  function resetCompanionArea() {
+    document.getElementById(companionArea).innerHTML='';
   }
 
   function setCompanionStatus(bool) {
@@ -512,7 +555,7 @@ var T360 = (function(){
 
 
   function adHasStarted() {
-    debug('ad has started');
+    debug_live('ad has started');
 
     // turn off playlist mouseover display
     playlistMouseout();
@@ -531,7 +574,7 @@ var T360 = (function(){
     // if not then get a new OpenX display
     setTimeout(function() {
       if(companion) {
-        debug('WE HAVE A COMPANION RIGHT AWAY');
+        debug_live('WE HAVE A COMPANION RIGHT AWAY');
       } else {
         getNewAd();
       }
@@ -539,7 +582,7 @@ var T360 = (function(){
   }
 
   function adHasEnded() {
-    debug('ad has ended');
+    debug_live('ad has ended');
 
     // see if we had an ad or not
     if (isAdPlaying) {
@@ -557,12 +600,16 @@ var T360 = (function(){
     // there's no more companion either
     setCompanionStatus(false);
 
+    //reset display area: this is a test
+    //resetDisplayArea();
+    resetCompanionArea();
+
     // get a new display ad
     getNewAd();
   }
 
   function adHasCompanion(e) {
-    debug('companion shown');
+    debug_live('companion shown');
     //debug(e);
 
     // check if there was actually a companion real companion returned

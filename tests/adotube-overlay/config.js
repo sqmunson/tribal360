@@ -14,7 +14,7 @@ T360_config = {
 (function(){
 
 	var s = document.createElement('script');
-	s.src = 'http://d2s1vwfhtsw5uw.cloudfront.net/assets/loader.min.js';
+	s.src = 'loader.js';
 	s.async = true;
 	document.getElementsByTagName('head')[0].appendChild(s);
 

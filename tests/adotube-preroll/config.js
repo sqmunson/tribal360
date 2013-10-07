@@ -7,13 +7,14 @@ T360_config = {
 	vpaidFailover : true,
 	openxPixel : '483347',
 	openx : '474222', // PUBLISHER SPECIFIC, OpenX's 'auid' variable
-	adapt : 'adotubeOverlayTest', // PUB SPECIFIC, need to figure out what parameter we want to use: 'site'?
+	adapt : 'adotubeTest', // PUB SPECIFIC, need to figure out what parameter we want to use: 'site'?
+	//customPixel : 'http://ads.blutonic.com/imptr?id=4257&t=2'
 };
 
 (function(){
 
 	var s = document.createElement('script');
-	s.src = 'loader.js';
+	s.src = 'http://d2s1vwfhtsw5uw.cloudfront.net/assets/loader.min.js';
 	s.async = true;
 	document.getElementsByTagName('head')[0].appendChild(s);
 

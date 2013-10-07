@@ -1,5 +1,5 @@
 T360_config = {
-	autoplay : false,
+	autoplay : true,
 	feedUrl : 'http://tribal360.com/assets/feeder.php?feed=https://buzz60.com/b60-mrss/view/Tribal360%20Feed%20Entertainment/unw3enu5g83fe5s84gle',
 	displayAdContainer : 't360_display',
 	videoArea : 't360_video',
@@ -7,7 +7,7 @@ T360_config = {
 	openxPixel : '483347', // PUB SPECIFIC: Tribal360 will provide
 	openx : '474222', // PUB SPECIFIC: Tribal360 will provide
 	adapt : '3', // PUB SPECIFIC: Tribal360 will provide
-	customPixel : 'http://ads.blutonic.com/imptr?id=4257&t=2'
+	//customPixel : 'http://ads.blutonic.com/imptr?id=4257&t=2'
 };
 
 (function(){

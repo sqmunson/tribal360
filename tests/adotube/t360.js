@@ -129,15 +129,15 @@ var T360 = (function(){
       advertising: {
         client: 'vast',
         schedule: {
-          // myPreroll: {
-          //   offset: "pre",
-          //   tag: 'http://t-ads.adap.tv/a/t/tribal360llc?artEid='+vpaid+'&categories='+adapt+'&cb=__timestamp__',
-          //   companiondiv: { id: companionArea, width: 300, height: 250 },
-          //   admessage: 'Your video will resume in XX seconds.'
-          // },
+          myPreroll: {
+            offset: "pre",
+            tag: 'http://t-ads.adap.tv/a/t/tribal360llc?artEid='+vpaid+'&categories=adotubeTest&cb=__timestamp__',
+            companiondiv: { id: companionArea, width: 300, height: 250 },
+            admessage: 'Your video will resume in XX seconds.'
+          },
           overlay: {
-            offset: 3,
-            tag: 'http://t-ads.adap.tv/a/t/tribal360llc?artEid='+vpaid+'&categories='+adapt+'&cb=__timestamp__',
+            offset: 10,
+            tag: 'http://t-ads.adap.tv/a/t/tribal360llc?artEid='+vpaid+'&categories=adotubeOverlayTest&cb=__timestamp__',
             type: "nonlinear"
           }
         }

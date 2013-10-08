@@ -34,6 +34,11 @@ surebaby:
 	openx: 487200
 	adapt: surebaby
 
+elitedaily:
+	openxPixel: 489953
+	openx: 489954
+	adapt: elitedaily
+
 
 TO DO:
 

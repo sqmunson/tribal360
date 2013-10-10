@@ -1,0 +1,29 @@
+http://www.adotube.com/php/services/player/OMLService.php?avpid=Ojp0CIo&ad_type=pre-rolls
+&vpaid=1&rtb=0&platform_version=vast20as3&publisher=${pub.homepage}&http_ref=${embeddingPageUrl}
+
+http://www.adotube.com/php/services/player/OMLService.php?avpid=Ojp0CIo&ad_type=pre-rolls
+
+
+
+
+
+
+
+http://www.adotube.com/php/services/player/OMLService.php?avpid=GhjnASy&ad_type=overlays
+&vpaid=1&rtb=0&platform_version=vast20as3&publisher=${pub.homepage}&http_ref=${embeddingPageUrl}
+
+http://www.adotube.com/php/services/player/OMLService.php?avpid=GhjnASy&ad_type=overlays
+
+
+
+
+
+
+Q1 - redbookmag
+http://ad4.liverail.com/?LR_PUBLISHER_ID=20344&LR_SCHEMA=vast2-vpaid&LR_VERTICAL=preroll&LR_URL=${embeddingPageUrl}&LR_AUTOPLAY=0&LR_CONTENT=6&LR_MUTED=0
+
+Q1 - ladolcevitae
+http://ad4.liverail.com/?LR_PUBLISHER_ID=19942&LR_SCHEMA=vast2-vpaid&LR_VERTICAL=preroll&LR_URL=${embeddingPageUrl}&LR_AUTOPLAY=0&LR_CONTENT=6&LR_MUTED=0
+
+Q1 - roadandtrack
+http://ad4.liverail.com/?LR_PUBLISHER_ID=20353&LR_SCHEMA=vast2-vpaid&LR_VERTICAL=preroll&LR_URL=${embeddingPageUrl}&LR_AUTOPLAY=0&LR_CONTENT=6&LR_MUTED=0

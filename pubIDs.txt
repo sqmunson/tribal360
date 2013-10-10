@@ -39,6 +39,11 @@ elitedaily:
 	openx: 489954
 	adapt: elitedaily
 
+pasta:
+	openxPixel: 491074
+	openx: 491073
+	adapt: pasta
+
 
 TO DO:
 

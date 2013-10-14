@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Mutation Observer</title>
+</head>
+<body>
+	<div id="target"></div>
+	<script>
+	MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
+
+	setTimeout(function(){
+		document.getElementById('target').innerHTML = '<div id="some-id"></div>';
+	}, 5000);
+// select the target node
+var target = document.querySelector('body');
+
+// create an observer instance
+// var observer = new MutationObserver(function(mutations) {
+// 	mutations.forEach(function(mutation) {
+// 		console.log(mutation.addedNodes);
+// 	});
+// });
+
+var observer = new MutationObserver(function(mutations, observer) {
+	console.log(mutations.length);
+	// look through all mutations that just occured
+	for(var i=0; i<mutations.length; ++i) {
+		// look through all added nodes of this mutation
+		for(var j=0; j<mutations[i].addedNodes.length; ++j) {
+			// was a child added with ID of 'bar'?
+			if(mutations[i].addedNodes[j].id == "some-id") {
+				console.log("some-id was added!");
+				observer.disconnect();
+			}
+		}
+	}
+});
+
+// configuration of the observer:
+var config = { attributes: true, childList: true, characterData: true, subtree: true };
+
+// pass in the target node, as well as the observer options
+observer.observe(target, config);
+
+// later, you can stop observing
+//observer.disconnect();
+</script>
+</body>
+</html>

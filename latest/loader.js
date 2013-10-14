@@ -1,77 +1,6 @@
-(function(window) {
-	"use strict";
-
-	var T360 = function( callback ) {
-			readyBound = false;
-			T360.isReady = false;
-			if ( typeof callback === "function" ) {
-				DOMReadyCallback = callback;
-			}
-			bindReady();
-		},
-		document = window.document,
-		readyBound = false,
-		DOMReadyCallback = function() {},
-		DOMContentLoaded = function() {
-			if ( document.addEventListener ) {
-					document.removeEventListener( "DOMContentLoaded", DOMContentLoaded, false );
-			} else {
-					document.detachEvent( "onreadystatechange", DOMContentLoaded );
-			}
-			DOMReady();
-		},
-		DOMReady = function() {
-			if ( !T360.isReady ) {
-				if ( !document.body ) {
-					return setTimeout( DOMReady, 1 );
-				}
-				T360.isReady = true;
-				DOMReadyCallback();
-			}
-		},
-		bindReady = function() {
-			var toplevel = false;
-			if ( readyBound ) {
-				return;
-			}
-			readyBound = true;
-			if ( document.readyState !== "loading" ) {
-				DOMReady();
-			}
-			if ( document.addEventListener ) {
-				document.addEventListener( "DOMContentLoaded", DOMContentLoaded, false );
-				window.addEventListener( "load", DOMContentLoaded, false );
-			} else if ( document.attachEvent ) {
-				document.attachEvent( "onreadystatechange", DOMContentLoaded );
-				window.attachEvent( "onload", DOMContentLoaded );
-				try {
-					toplevel = window.frameElement === null;
-				} catch (e) {}
-				if ( document.documentElement.doScroll && toplevel ) {
-					doScrollCheck();
-				}
-			}
-		},
-		doScrollCheck = function() {
-			if ( T360.isReady ) {
-				return;
-			}
-			try {
-				document.documentElement.doScroll("left");
-			} catch ( error ) {
-				setTimeout( doScrollCheck, 1 );
-				return;
-			}
-			DOMReady();
-		};
-	T360.isReady = false;
-	window.T360_loader = T360;
-
-})(window);
-
 
 // use the DOM Ready function above to pass in all the loader work ONLY when the document has loaded
-T360_loader(function(){
+(function(){
 
 	var UserAgentManager = {
 		user_agent : '',
@@ -244,7 +173,6 @@ T360_loader(function(){
 	window.T360_userAgent = UserAgentManager;
 
 
-
 	// a function to load dependencies in callbacks
 	function loadJS(src, callback) {
 		var s = document.createElement('script');
@@ -260,8 +188,22 @@ T360_loader(function(){
 		document.getElementsByTagName('head')[0].appendChild(s);
 	}
 
-	// only load everything if we have a target video area, companion area, and it's not mobile
-	if(document.getElementById(T360_config.videoArea) && document.getElementById(T360_config.displayAdContainer) && !T360_userAgent.isMobileBrowser()) {
+	// timer for checking for target divs
+	function checkForTargets() {
+		if(document.getElementById(T360_config.videoArea) && document.getElementById(T360_config.displayAdContainer)) {
+			// we're good to go, only load everything if it's not mobile
+			if(!T360_userAgent.isMobileBrowser()) {
+				//console.log("we're loading!!");
+				loadEverything();
+			}
+		} else {
+			//console.log("don't have target divs yet!");
+			setTimeout(checkForTargets, 100);
+		}
+	}
+
+	// loads everything with dependencies
+	function loadEverything() {
 
 		// LOAD MAXMIND and confirm we're in the U.S.
 		loadJS('http://j.maxmind.com/app/country.js', function() {
@@ -280,8 +222,11 @@ T360_loader(function(){
 						//console.log('loaded OpenX');
 
 						// LOAD t360 and then add MDot stuff and then CALL t360.init and pass in the config!!
-						loadJS('t360.js', function() {
+						loadJS('http://d2s1vwfhtsw5uw.cloudfront.net/assets/t360.min.js', function() {
 							//console.log('loaded t360');
+
+							// init!!!!
+							T360.init(T360_config);
 
 							var bim_div = document.createElement('div'),
 									bim_script = document.createElement('script'),
@@ -295,15 +240,13 @@ T360_loader(function(){
 							bim_div.appendChild(bim_img);
 							document.getElementsByTagName("body")[0].appendChild(bim_div);
 
-							// init!!!!
-							T360.init(T360_config);
-
 						}); // end t360.js
 					}); // end openx.js
 				}); // end jwplayer.js
 			} // end geo country IF statement
-		});
+		}); // end first loadJS()
+	} // end loadEverything()
 
-	}
+checkForTargets();
 
-});
+})();

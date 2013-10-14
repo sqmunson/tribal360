@@ -77,8 +77,8 @@ var T360 = (function(){
     //console.log(arguments);
   }
   function debug_live() {
-    if (!window.console) console = {log: function() {}};
-    console.log(arguments);
+    //if (!window.console) console = {log: function() {}};
+    //console.log(arguments);
   }
 
   function kickThingsOff() {

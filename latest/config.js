@@ -12,7 +12,7 @@ T360_config = {
 (function(){
 
 	var s = document.createElement('script');
-	s.src = 'loader.js';
+	s.src = 'loader.min.js';
 	s.async = true;
 	document.getElementsByTagName('head')[0].appendChild(s);
 

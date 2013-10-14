@@ -25,12 +25,16 @@
 </head>
 <body>
 	<div id="article">
-		<div id="t360_video"></div>
 	</div>
 	<div id="sidebar">
-			<div id="bluTonic_Companion">
-			</div>
 	</div>
+
+	<script>
+		setTimeout(function() {
+			document.getElementById('article').innerHTML = '<div id="t360_video"></div>';
+			document.getElementById('sidebar').innerHTML = '<div id="bluTonic_Companion">';
+		}, 5000);
+	</script>
 
 </body>
 </html>

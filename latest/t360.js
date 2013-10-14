@@ -1,8 +1,10 @@
 
 //if (!window.console) console = {log: function() {}};
 
+// T360 module
 var T360 = (function(){
 
+  // initialize all the variables we'll need
   var me = {},
     videoArea,
     player,
@@ -34,7 +36,8 @@ var T360 = (function(){
     vpaid;
 
   me.init = function(config) {
-    // config variables
+
+    // config variables with defaults
     videoArea = config.videoArea || 't360_video';
     companionArea = config.companionArea || 't360_companionArea';
     displayArea = config.displayArea || 't360_displayArea';
@@ -54,11 +57,13 @@ var T360 = (function(){
     displayAdContainer = config.displayAdContainer || 't360_displayAdContainer';
     thumbnailItemId = config.thumbnailItemId || 't360_item';
     vpaid = config.vpaidFailover ? 'vast_2_0_vpaid_failover' : 'vast_2_0_vpaid';
+
     // dynamic variables
     isMobile = T360_userAgent.isMobileBrowser();
     playerWidth = document.getElementById(videoArea).clientWidth;
     playerHeight = playerWidth*0.5625;
-    // initial variables
+
+    // internal variables
     openxContainer = 'openxContainer';
     currentIndex = 0;
     streamStarted = false;
@@ -71,70 +76,30 @@ var T360 = (function(){
     } else {
       kickThingsOff();
     }
+
   };
 
-  function debug() {
-    //console.log(arguments);
-  }
-  function debug_live() {
-    //if (!window.console) console = {log: function() {}};
-    //console.log(arguments);
-  }
-
   function kickThingsOff() {
+
+    // get feed, pass result to buildPlaylist
     get(feedUrl, buildPlaylist, playlistLoadError);
+
+    // load a few custom styles
     loadStyles();
+
+    // insert target divs for display ad and companion ad
     addDisplayDivs();
+
+    // initialize weird OpenX display ad system
     initOpenX();
   }
 
-  function addDisplayDivs() {
-    var div = document.getElementById(displayAdContainer),
-      displayAd,
-      displayAdHolder,
-      companionAd;
-
-      displayAdHolder = document.createElement('div');
-      displayAdHolder.setAttribute('id',openxContainer);
-      displayAd = document.createElement('div');
-      displayAd.setAttribute('id',displayArea);
-      displayAdHolder.appendChild(displayAd);
-      companionAd = document.createElement('div');
-      companionAd.setAttribute('id',companionArea);
-      div.appendChild(displayAdHolder);
-      div.appendChild(companionAd);
-  }
-
-  function loadStyles() {
-    // add for IE
-    var style = document.createElement('style'),
-      css = '#'+playlistContainer+' {position: absolute;top:0;right: 5px;display: none;} .'+thumbnailContainer+' {zoom: 1;filter: alpha(opacity=50);opacity: 0.5;} .'+thumbnailContainer+':hover {zoom: 1;filter: alpha(opacity=100);opacity: 1;} #'+playlistContainer+' div:hover, #'+playlistContainer+' span:hover {color: #ccc !important;cursor: pointer;}';
-
-    style.type = 'text/css';
-    if (style.styleSheet){
-      style.styleSheet.cssText = css;
-    } else {
-      style.appendChild(document.createTextNode(css));
-    }
-    document.getElementsByTagName('head')[0].appendChild(style);
-  }
-
-  function initOpenX() {
-    debug_live('initOpenx');
-    // var div = document.getElementById(displayAdContainer),
-    //   displayAd;
-    // if(displayAdContainer) {
-    //   displayAd = document.createElement('div');
-    //   displayAd.setAttribute('id',companionArea);
-    //   div.appendChild(displayAd);
-    // }
-    OX_4d6552943f5a4 = OX();
-    OX_4d6552943f5a4.addAdUnit(openx);
-    OX_4d6552943f5a4.setAdUnitSlotId(openx,displayArea);
-  }
-
   function instantiateDesktop() {
+
+    // set index to 0 (first video)
     currentIndex = 0;
+
+    // setup JW and make it a variable
     player = jwplayer(videoArea).setup({
       height: playerHeight,
       width: playerWidth,
@@ -161,24 +126,173 @@ var T360 = (function(){
     });
 
     // set player events via JW API
+
+    // fires the stream initiation pixel if it hasn't already
     player.onPlay(streamInitiationPixel);
+
+    // checks to see if we're coming from an ad or just a user pausing the player
+    // THIS IS A FIX FOR HW 6.6 because their API is broken and doesn't fire some callbacks
     player.onPlay(function(e) {
-      doAdCompleteStuff(e); // FIX FOR JW 6.6
+      doAdCompleteStuff(e);
     });
+
+    // when one playlist item completes show the next one
     player.onPlaylistComplete(showNextVideo);
+
+    // do some things when an ad has started
+    // this is one JW 6.6 callback that IS working
     player.onAdImpression(adHasStarted);
-    //player.onAdComplete(adHasEnded); // this is a problem with JW 6.6
+
+    // JW 6.6 PROBLEM: disabling this call back because it's currently broken
+    //player.onAdComplete(adHasEnded);
+
+    // do some things when we JW detects a companion
+    // this is another JW 6.6 callback that is working,
+    // BUT: much of the time it detects a companion when there isn't one,
+    // so we do some checking in adHasCompanion()
     player.onAdCompanions(function(e) {
       adHasCompanion(e);
     });
-    //player.onAdClick(adHasBeenClicked); // this is a problem with JW 6.6
+
+    // JW 6.6 PROBLEM: disabling this call back because it's currently broken
+    //player.onAdClick(adHasBeenClicked);
+
+    // do some things when the player is definitely ready
     player.onReady(function() {
+
+      // display the thumbnails
       displayPlaylist();
+
+      // if it's not autoplay then get a display ad to start with
+      // if it is autoplay then we'll wait to check for a companion
       checkForAutoplay();
+
+      // quick fix because some pubs floated elements directly above the player
       player.container.parentElement.setAttribute('style', player.container.parentElement.style.cssText+'clear:both;');
+
+      // add the mouseover event for triggering thumbnails
       addEvent(player.container.parentElement, 'mouseover', playlistMouseover);
       addEvent(player.container.parentElement, 'mouseout', playlistMouseout);
     });
+  }
+
+  function addDisplayDivs() {
+
+    var div = document.getElementById(displayAdContainer),
+      displayAd,
+      displayAdHolder,
+      companionAd;
+
+      // make display ad container because OpenX actually replaces the target div
+      // when it loads a display ad
+      displayAdHolder = document.createElement('div');
+      displayAdHolder.setAttribute('id',openxContainer);
+
+      // make display ad div for targeting
+      displayAd = document.createElement('div');
+      displayAd.setAttribute('id',displayArea);
+
+      // make companion target div.
+      // Adaptv does not overwrite the target div so it doesn't need a container
+      companionAd = document.createElement('div');
+      companionAd.setAttribute('id',companionArea);
+
+      // append everything to the main display/companion container
+      displayAdHolder.appendChild(displayAd);
+      div.appendChild(displayAdHolder);
+      div.appendChild(companionAd);
+  }
+
+  function loadStyles() {
+
+    var style = document.createElement('style'),
+      css = '#'+playlistContainer+' {position: absolute;top:0;right: 5px;display: none;} .'+thumbnailContainer+' {zoom: 1;filter: alpha(opacity=50);opacity: 0.5;} .'+thumbnailContainer+':hover {zoom: 1;filter: alpha(opacity=100);opacity: 1;} #'+playlistContainer+' div:hover, #'+playlistContainer+' span:hover {color: #ccc !important;cursor: pointer;}';
+
+    // some IE logic
+    style.type = 'text/css';
+    if (style.styleSheet){
+      style.styleSheet.cssText = css;
+    } else {
+      style.appendChild(document.createTextNode(css));
+    }
+    document.getElementsByTagName('head')[0].appendChild(style);
+  }
+
+  function initOpenX() {
+    debug('initOpenx');
+    OX_4d6552943f5a4 = OX();
+    OX_4d6552943f5a4.addAdUnit(openx);
+    OX_4d6552943f5a4.setAdUnitSlotId(openx,displayArea);
+  }
+
+  function buildPlaylist(respObj) {
+    debug('buildPlaylist');
+    var json = JSON.parse(respObj),
+        i;
+    for (i = 0; i < json.channel.item.length; i++) {
+        playlist[i] = {};
+        playlist[i]['id'] = json.channel.item[i]['id'];
+        playlist[i]['src'] = [];
+        playlist[i]['src'].push(json.channel.item[i]['file']);
+        playlist[i]['thumbnail'] = json.channel.item[i]['thumbnail'];
+        playlist[i]['poster'] = json.channel.item[i]['poster'];
+        playlist[i]['title'] = json.channel.item[i]['title'];
+    }
+    startPlayer();
+  }
+
+  function startPlayer() {
+    if(isMobile) {
+      // nothin for now
+    } else {
+      instantiateDesktop();
+    }
+  }
+
+  function displayPlaylist() {
+    debug("displayPlaylist");
+    if(playlist.length) {
+      var div,
+          img,
+          span,
+          container,
+          thumbWidth,
+          i;
+      container = document.createElement('div');
+      container.setAttribute('id', playlistContainer);
+      thumbWidth = (playerWidth-((playlist.length+1)*10))/playlist.length;
+
+      for (i = 0; i < playlist.length; i++) {
+        div = document.createElement('div');
+        div.className = thumbnailContainer;
+        div.setAttribute('id', thumbnailItemId + i);
+        div.setAttribute('style', 'float:left;width:'+thumbWidth+'px;height:120px;margin: 10px 5px 0px 5px;font-family:sans-serif;font-size:9px;line-height:1.6em;position:relative;overflow:hidden;');
+        img = document.createElement('img');
+        img.setAttribute('src', playlist[i]['thumbnail']);
+        img.onload = adjustThumbnail;
+        span = document.createElement('span');
+        span.setAttribute('style', 'position: absolute;bottom:0px;display:block;background-color:black;color:#aaaaaa;padding:5px;width:'+(thumbWidth-10)+'px;');
+        span.innerHTML = playlist[i]['title'];
+        addClickEvent(div, playlist[i]);
+        div.appendChild(img);
+        div.appendChild(span);
+        container.appendChild(div);
+      }
+      player.container.parentElement.appendChild(container);
+    } else {
+      debug('error building playlist');
+    }
+  }
+
+  function adjustThumbnail() {
+    var aspectRatio = this.width/this.height,
+        newWidth = 120*aspectRatio,
+        parentWidth = (playerWidth-((playlist.length+1)*10))/playlist.length;
+    if(newWidth > parentWidth) {
+      this.setAttribute('style', 'width:'+newWidth+'px;left:-'+(newWidth-parentWidth)/2+'px;position:relative;max-width:'+newWidth+'px;');
+    } else {
+      this.setAttribute('style', 'width:100%;position:relative;');
+    }
   }
 
   function checkForAutoplay() {
@@ -201,20 +315,23 @@ var T360 = (function(){
         resetDisplayArea();
       }
 
-      // make fake OpenX ad call and get impression pixel
+      // make fake OpenX ad call to get our impression pixel that we use for tracking "stream initiation"
       get(openxPixelUrl, openxPixelSuccess, openxPixelError);
 
     }
   }
 
   function doAdCompleteStuff(e) {
-    debug('doAdCompleteStuff!');
-    //debug_live(e.oldstate);
+    debug('doAdCompleteStuff');
+
+    // when coming from an ad the 'oldstate' is set to BUFFERING by JW
     if(e.oldstate === 'BUFFERING') {
       adHasEnded();
     }
   }
+
   function userClickedTheVideo() {
+    // this isn't used at the moment
     if(isAdPlaying) {
       player.setControls(true);
     }
@@ -263,7 +380,7 @@ var T360 = (function(){
   }
 
   function xmlFromString(string) {
-    debug('xmlFromString()');
+    debug('xmlFromString');
     if (!string)
       return false;
     var message = "";
@@ -317,76 +434,6 @@ var T360 = (function(){
     debug('OpenX pixel error');
   }
 
-  function buildPlaylist(respObj) { // TO DO: ADD ABILITY TO ADD MULTIPLE SOURCE FILES
-    //debug('buildPlaylist()');
-    var json = JSON.parse(respObj),
-        i;
-    for (i = 0; i < json.channel.item.length; i++) {
-        playlist[i] = {};
-        playlist[i]['id'] = json.channel.item[i]['id'];
-        playlist[i]['src'] = [];
-        playlist[i]['src'].push(json.channel.item[i]['file']);
-        playlist[i]['thumbnail'] = json.channel.item[i]['thumbnail'];
-        playlist[i]['poster'] = json.channel.item[i]['poster'];
-        playlist[i]['title'] = json.channel.item[i]['title'];
-    }
-    startPlayer();
-  }
-
-  function startPlayer() {
-    if(isMobile) {
-      // nothin for now
-    } else {
-      instantiateDesktop();
-    }
-  }
-
-  function displayPlaylist() {
-    //debug("displayPlaylist()");
-    if(playlist.length) {
-      var div,
-          img,
-          span,
-          container,
-          thumbWidth,
-          i;
-      container = document.createElement('div');
-      container.setAttribute('id', playlistContainer);
-      thumbWidth = (playerWidth-((playlist.length+1)*10))/playlist.length;
-
-      for (i = 0; i < playlist.length; i++) {
-        div = document.createElement('div');
-        div.className = thumbnailContainer;
-        div.setAttribute('id', thumbnailItemId + i);
-        div.setAttribute('style', 'float:left;width:'+thumbWidth+'px;height:120px;margin: 10px 5px 0px 5px;font-family:sans-serif;font-size:9px;line-height:1.6em;position:relative;overflow:hidden;');
-        img = document.createElement('img');
-        img.setAttribute('src', playlist[i]['thumbnail']);
-        img.onload = adjustThumbnail;
-        span = document.createElement('span');
-        span.setAttribute('style', 'position: absolute;bottom:0px;display:block;background-color:black;color:#aaaaaa;padding:5px;width:'+(thumbWidth-10)+'px;');
-        span.innerHTML = playlist[i]['title'];
-        addClickEvent(div, playlist[i]);
-        div.appendChild(img);
-        div.appendChild(span);
-        container.appendChild(div);
-      }
-      player.container.parentElement.appendChild(container);
-    } else {
-      debug('error building playlist');
-    }
-  }
-
-  function adjustThumbnail() {
-    var aspectRatio = this.width/this.height,
-        newWidth = 120*aspectRatio,
-        parentWidth = (playerWidth-((playlist.length+1)*10))/playlist.length;
-    if(newWidth > parentWidth) {
-      this.setAttribute('style', 'width:'+newWidth+'px;left:-'+(newWidth-parentWidth)/2+'px;position:relative;max-width:'+newWidth+'px;');
-    } else {
-      this.setAttribute('style', 'width:100%;position:relative;');
-    }
-  }
-
   function playlistMouseover() {
     if(!isAdPlaying){
       document.getElementById(playlistContainer).setAttribute('style', 'display:block;');
@@ -405,24 +452,32 @@ var T360 = (function(){
 
   function handleClickEvent(index) {
     //debug('handleClickEvent()');
-    // TO DO: get rid of logic for clicking thumbnail during ad playback cuz now that's impossible cuz they're hidden
+    // TO DO: get rid of logic for clicking thumbnail during ad playback because now they're hidden during ad playback
     if(isAdPlaying) {
       debug('you clicked on a thumbnail: ad is currently playing');
     } else {
       debug('you clicked on a thumbnail: content is currently playing');
       resetDisplayArea();
     }
+
+    // load the video corresponding to the clicked thumbnail
     player.load([{file:playlist[index].src[0]}]).play();
+
+    // set the current index to the selected video
     currentIndex = index;
   }
 
   function playlistLoadError() {
-    debug('playlistLoadError()');
+    debug('playlistLoadError');
   }
 
   function showNextVideo() {
-    debug('showNextVideo()');
+    debug('showNextVideo');
+
+    // reset the display ad container for either a new companion or a new display
     resetDisplayArea();
+
+    // if this was the last video then loop back to the first video
     if(parseInt(currentIndex) === playlist.length - 1) {
       currentIndex = 0;
       player.load([{file:playlist[0].src[0]}]).play();
@@ -433,12 +488,9 @@ var T360 = (function(){
   }
 
   function getNewAd() {
-    debug_live('getNewAd()');
-    //console.log(companionArea);
+    debug('getNewAd');
     OX_4d6552943f5a4 = OX();
     OX_4d6552943f5a4.addAdUnit(openx);
-    //OX_4d6552943f5a4.setAdUnitSlotId(openx,displayArea);
-
     OX_4d6552943f5a4.setAdUnitSlotId(openx,displayArea);
     OX_4d6552943f5a4.load();
   }
@@ -449,6 +501,7 @@ var T360 = (function(){
   }
 
   function resetCompanionArea() {
+    // to reset the companion target we can just empty the div
     document.getElementById(companionArea).innerHTML='';
   }
 
@@ -468,33 +521,80 @@ var T360 = (function(){
     player.setControls(true);
   }
 
-  function addEvent(obj, evt, fnc) {
-      // W3C model
-      if (obj.addEventListener) {
-          obj.addEventListener(evt, fnc, false);
-          return true;
+  function adHasStarted() {
+    debug('ad has started');
+
+    // turn off playlist mouseover display
+    playlistMouseout();
+
+    // ad is playing
+    setAdPlaying(true);
+
+    // hide player controls
+    hidePlayerControls();
+
+    // call in case this is the first ad at the start of the stream
+    streamInitiationPixel();
+
+    // after 1 second check to see if a companion was returned,
+    // if it is then it will be automatically shown,
+    // if not then get a new OpenX display
+    setTimeout(function() {
+      if(companion) {
+        debug('WE HAVE A COMPANION RIGHT AWAY');
+      } else {
+        getNewAd();
       }
-      // Microsoft model
-      else if (obj.attachEvent) {
-          return obj.attachEvent('on' + evt, fnc);
-      }
-      // Browser don't support W3C or MSFT model, go on with traditional
-      else {
-          evt = 'on'+evt;
-          if(typeof obj[evt] === 'function'){
-              // Object already has a function on traditional
-              // Let's wrap it with our own function inside another function
-              fnc = (function(f1,f2){
-                  return function(){
-                      f1.apply(this,arguments);
-                      f2.apply(this,arguments);
-                  };
-              })(obj[evt], fnc);
-          }
-          obj[evt] = fnc;
-          return true;
-      }
-      //return false;
+    }, 1000);
+  }
+
+  function adHasEnded() {
+    debug('ad has ended');
+
+    // see if we had an ad or not
+    if (isAdPlaying) {
+      debug('ad ran and ended');
+    } else {
+      debug('no ads were available, moving on');
+    }
+
+    // restore player controls
+    showPlayerControls();
+
+    // ad is no longer playing
+    setAdPlaying(false);
+
+    // there's no more companion either
+    setCompanionStatus(false);
+
+    // reset companion are
+    resetCompanionArea();
+
+    // get a new display ad
+    getNewAd();
+  }
+
+  function adHasCompanion(e) {
+
+    // check if there was actually a companion real companion returned
+    if(e.companions.length) {
+
+      // if there is then say so
+      setCompanionStatus(true);
+    }
+  }
+
+  // DISABLING this because of JW 6.6 API problem
+  // function adHasBeenClicked() {
+  //   // turn the controls on, this will give a "your video will resume in XX seconds" message plus the play button
+  //   player.setControls(true);
+  // }
+
+
+  // HELPER FUNCTIONS: debug(), get(), addEvent()
+
+  function debug() {
+    //console.log(arguments);
   }
 
   function get(url, onSuccess, onError){
@@ -553,79 +653,35 @@ var T360 = (function(){
     } // end else
   }
 
-
-  function adHasStarted() {
-    debug_live('ad has started');
-
-    // turn off playlist mouseover display
-    playlistMouseout();
-
-    // ad is playing
-    setAdPlaying(true);
-
-    // hide player controls
-    hidePlayerControls();
-
-    // call in case this is the first ad at the start of the stream
-    streamInitiationPixel();
-
-    // after 1 second check to see if a companion was returned,
-    // if it is then it will be automatically shown,
-    // if not then get a new OpenX display
-    setTimeout(function() {
-      if(companion) {
-        debug_live('WE HAVE A COMPANION RIGHT AWAY');
-      } else {
-        getNewAd();
+  function addEvent(obj, evt, fnc) {
+      // W3C model
+      if (obj.addEventListener) {
+          obj.addEventListener(evt, fnc, false);
+          return true;
       }
-    }, 1000);
+      // Microsoft model
+      else if (obj.attachEvent) {
+          return obj.attachEvent('on' + evt, fnc);
+      }
+      // Browser don't support W3C or MSFT model, go on with traditional
+      else {
+          evt = 'on'+evt;
+          if(typeof obj[evt] === 'function'){
+              // Object already has a function on traditional
+              // Let's wrap it with our own function inside another function
+              fnc = (function(f1,f2){
+                  return function(){
+                      f1.apply(this,arguments);
+                      f2.apply(this,arguments);
+                  };
+              })(obj[evt], fnc);
+          }
+          obj[evt] = fnc;
+          return true;
+      }
+      //return false;
   }
-
-  function adHasEnded() {
-    debug_live('ad has ended');
-
-    // see if we had an ad or not
-    if (isAdPlaying) {
-      debug('ad ran and ended');
-    } else {
-      debug('no ads were available, moving on');
-    }
-
-    // restore player controls
-    showPlayerControls();
-
-    // ad is no longer playing
-    setAdPlaying(false);
-
-    // there's no more companion either
-    setCompanionStatus(false);
-
-    //reset display area: this is a test
-    //resetDisplayArea();
-    resetCompanionArea();
-
-    // get a new display ad
-    getNewAd();
-  }
-
-  function adHasCompanion(e) {
-    debug_live('companion shown');
-    //debug(e);
-
-    // check if there was actually a companion real companion returned
-    if(e.companions.length) {
-
-      // if there is then say so
-      setCompanionStatus(true);
-    }
-  }
-
-  // function adHasBeenClicked() {
-  //   debug('ad clicked');
-
-  //   // turn the controls on, this will give a "your video will resume in XX seconds" message plus the play button
-  //   player.setControls(true);
-  // }
 
   return me;
+
 }());

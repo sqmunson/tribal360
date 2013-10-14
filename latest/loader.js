@@ -188,17 +188,29 @@
 		document.getElementsByTagName('head')[0].appendChild(s);
 	}
 
-	// timer for checking for target divs
+	var maxChecker = 0;
+
 	function checkForTargets() {
+
+		// we only want to load our scripts if the target divs are there
 		if(document.getElementById(T360_config.videoArea) && document.getElementById(T360_config.displayAdContainer)) {
-			// we're good to go, only load everything if it's not mobile
+
+			// we have the target divs, now make sure it's not mobile
 			if(!T360_userAgent.isMobileBrowser()) {
-				//console.log("we're loading!!");
 				loadEverything();
 			}
+
 		} else {
-			//console.log("don't have target divs yet!");
-			setTimeout(checkForTargets, 100);
+
+			maxChecker++;
+
+			// only loop for 10 seconds
+			if(maxChecker <= 100) {
+
+				// we don't have targets, check again in 100 milliseconds
+				setTimeout(checkForTargets, 100);
+
+			}
 		}
 	}
 
@@ -222,7 +234,8 @@
 						//console.log('loaded OpenX');
 
 						// LOAD t360 and then add MDot stuff and then CALL t360.init and pass in the config!!
-						loadJS('http://d2s1vwfhtsw5uw.cloudfront.net/assets/t360.min.js', function() {
+						//loadJS('http://d2s1vwfhtsw5uw.cloudfront.net/assets/t360.min.js', function() {
+						loadJS('t360.js', function() {
 							//console.log('loaded t360');
 
 							// init!!!!
@@ -247,6 +260,7 @@
 		}); // end first loadJS()
 	} // end loadEverything()
 
+// start looking for target divs
 checkForTargets();
 
 })();

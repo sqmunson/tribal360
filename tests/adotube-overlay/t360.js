@@ -131,13 +131,13 @@ var T360 = (function(){
         schedule: {
           myPreroll: {
             offset: "pre",
-            tag: 'http://t-ads.adap.tv/a/t/tribal360llc?artEid='+vpaid+'&categories=adotubeTest&cb=__timestamp__',
+            tag: 'http://u-ads.adap.tv/a/h/AiVnje_CA3BJsRMP0_gPXAtRyCRFRZSd?cb=__timestamp__&pageUrl=__page-url__&eov=eov',
             companiondiv: { id: companionArea, width: 300, height: 250 },
             admessage: 'Your video will resume in XX seconds.'
           },
           overlay: {
             offset: 10,
-            tag: 'http://t-ads.adap.tv/a/t/tribal360llc?artEid='+vpaid+'&categories=adotubeOverlayTest&cb=__timestamp__',
+            tag: 'http://u-ads.adap.tv/a/h/pTqxIPaT8gKxSoMoNdwC_l7grfG5xBHZ8+V5Bagt1q0=?cb=__timestamp__&pageUrl=__page-url__&eov=eov',
             type: "nonlinear"
           }
         }

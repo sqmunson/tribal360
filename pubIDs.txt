@@ -46,9 +46,14 @@ pasta:
 
 
 thecelebritycafe:
-	openxPixel: 494250
+	openxPixel: 494240
 	openx: 494249
-	adapt: thecelebrity
+	adapt: thecelebritycafe
+
+failblogcheezburger:
+	openxPixel: 494269
+	openx: 494255
+	adapt: failblogcheezburger
 
 TO DO:
 

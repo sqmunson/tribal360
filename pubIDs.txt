@@ -45,6 +45,11 @@ pasta:
 	adapt: pasta
 
 
+thecelebritycafe:
+	openxPixel: 494250
+	openx: 494249
+	adapt: thecelebrity
+
 TO DO:
 
 cosmo:

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>JW Adclock test</title>
+</head>
+<body>
+	<div id="video"></div>
+	<div id="companion"></div>
+	<div id="logs"></div>
+	<script type="text/javascript" src="http://d2s1vwfhtsw5uw.cloudfront.net/assets/jwplayer.js"></script>
+	<script type="text/javascript">jwplayer.key="O4uKyOWAS48nIe/23zZ9t1+EqL+uT02HD7RZBg==";</script>
+	<script>
+	var player = jwplayer("video").setup({
+      height: 400,
+      width: 700,
+      primary: 'flash',
+      autostart: false,
+      playlist: [{
+        file: "http://c368577.r77.cf1.rackcdn.com/8485444321643352129.mp4",
+      },{
+        file: "http://c368577.r77.cf1.rackcdn.com/8485444321643352129.mp4",
+      },{
+        file: "http://c368577.r77.cf1.rackcdn.com/8485444321643352129.mp4",
+      }],
+      advertising: {
+        client: 'vast',
+        tag: 'http://u-ads.adap.tv/a/h/H3IEFTyrw3wirU5miuKT2HvRvj4wKwdIxKGG0Ed2SNE=?cb=89745876345&pageUrl=http%3A%2F%2Felitedaily.com&eov=eov',
+        companiondiv: { id: 'companion', width: 300, height: 250 }
+      }
+      // plugins: {
+      //   'http://redir.adap.tv/redir/integrations/jw/adaptvjw6.swf' : {
+      //     key: 'integration_test',
+      //     //companionid: 'companion'
+      //     //zid: 'inhouse_preroll'
+      //   }
+      // }
+    });
+
+	</script>
+
+</body>
+</html>

@@ -33,7 +33,9 @@ var T360 = (function(){
     streamStarted,
     thumbnailItemId,
     openxPixelUrl,
-    vpaid;
+    vpaid,
+    autoplayOnView,
+    utag;
 
   me.init = function(config) {
 
@@ -57,6 +59,8 @@ var T360 = (function(){
     displayAdContainer = config.displayAdContainer || 't360_displayAdContainer';
     thumbnailItemId = config.thumbnailItemId || 't360_item';
     vpaid = config.vpaidFailover ? 'vast_2_0_vpaid_failover' : 'vast_2_0_vpaid';
+    autoplayOnView = config.autoplayOnView || false;
+    utag = config.utag || false;
 
     // dynamic variables
     isMobile = T360_userAgent.isMobileBrowser();
@@ -119,10 +123,27 @@ var T360 = (function(){
       },
       advertising: {
         client: 'vast',
-        tag: 'http://t-ads.adap.tv/a/t/tribal360llc?artEid='+vpaid+'&categories='+adapt+'&cb=__timestamp__',
+        //tag: 'http://t-ads.adap.tv/a/t/tribal360llc?artEid='+vpaid+'&categories='+adapt+'&cb=__timestamp__',
+        tag: (utag) ? 'http://u-ads.adap.tv/a/h/'+adapt+'?cb=__timestamp__&pageUrl='+encodeURIComponent(location.href)+'&eov=eov' : 'http://t-ads.adap.tv/a/t/tribal360llc?artEid='+vpaid+'&categories='+adapt+'&cb=__timestamp__',
         companiondiv: { id: companionArea, width: 300, height: 250 },
         admessage: 'Your video will resume in XX seconds.'
       }
+      // advertising: {
+      //   client: 'vast',
+      //   schedule: {
+      //     myPreroll: {
+      //       offset: "pre",
+      //       tag: 'http://u-ads.adap.tv/a/h/AiVnje_CA3BJsRMP0_gPXAtRyCRFRZSd?cb=__timestamp__&pageUrl='+encodeURIComponent(location.href)+'&eov=eov',
+      //       companiondiv: { id: companionArea, width: 300, height: 250 },
+      //       admessage: 'Your video will resume in XX seconds.'
+      //     },
+      //     overlay: {
+      //       offset: 10,
+      //       tag: 'http://u-ads.adap.tv/a/h/pTqxIPaT8gKxSoMoNdwC_l7grfG5xBHZ8+V5Bagt1q0=?cb=__timestamp__&pageUrl='+encodeURIComponent(location.href)+'&eov=eov',
+      //       type: "nonlinear"
+      //     }
+      //   }
+      // }
     });
 
     // set player events via JW API
@@ -160,6 +181,11 @@ var T360 = (function(){
     // do some things when the player is definitely ready
     player.onReady(function() {
 
+      // add scroll event
+      //autoplayOnView();
+      if(autoplayOnView) {
+        addAutoPlayOnViewEvent();
+      }
       // display the thumbnails
       displayPlaylist();
 
@@ -174,6 +200,29 @@ var T360 = (function(){
       addEvent(player.container.parentElement, 'mouseover', playlistMouseover);
       addEvent(player.container.parentElement, 'mouseout', playlistMouseout);
     });
+  }
+
+  function addAutoPlayOnViewEvent() {
+    addEvent(window, 'scroll', autoplayOnViewHandler);
+  }
+
+  function removeAutoplayOnViewEvent() {
+    removeEventHandler(window, 'scroll', autoplayOnViewHandler);
+  }
+
+  function removeEventHandler(elem,eventType,handler) {
+   if (elem.removeEventListener)
+      elem.removeEventListener (eventType,handler,false);
+   if (elem.detachEvent)
+      elem.detachEvent ('on'+eventType,handler);
+  }
+
+  function autoplayOnViewHandler() {
+      if(window.innerHeight >= player.container.parentElement.getBoundingClientRect().top) {
+        player.play();
+        removeAutoplayOnViewEvent();
+        //console.log('we here');
+      }
   }
 
   function addDisplayDivs() {

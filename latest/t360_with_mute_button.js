@@ -42,7 +42,7 @@ var T360 = (function(){
     feedUrl = config.feedUrl || 'http://tribal360.com/assets/feeder.php?feed=https://buzz60.com/b60-mrss/view/Sam%20Stella%20Zazoom%20Feed/unw3enu5g83fe5s84gle';
     openx = config.openx || '474222';
     openxPixelUrl = config.openxPixelUrl || 'http://ox-d.tribal360.com/v/1.0/av?auid=483347';
-    adapt = config.adapt || '3';
+    adapt = config.adapt || '';
     customPixel = config.customPixel || '';
     skin = config.skin || 'http://d2s1vwfhtsw5uw.cloudfront.net/assets/skin/tc_skin.xml';
     logoFile = config.logoFile || 'http://d2s1vwfhtsw5uw.cloudfront.net/assets/T360logo_58.png';

@@ -173,6 +173,181 @@
 	window.T360_userAgent = UserAgentManager;
 
 
+
+
+	function get(url, onSuccess, onError){
+    var local = (url.indexOf('file:') === 0 || (window.location.href.indexOf('file:') === 0 && url.indexOf('http') === -1)),
+        xdr,
+        request;
+
+    if(T360_userAgent.isIE() && XDomainRequest != 'undefined') {
+      xdr = new XDomainRequest();
+      xdr.onload = function() {
+        onSuccess(xdr.responseText);
+      };
+      xdr.open('GET', url);
+      xdr.send();
+    } else {
+
+      if (typeof XMLHttpRequest === 'undefined') {
+        window.XMLHttpRequest = function () {
+          try { return new window.ActiveXObject('Msxml2.XMLHTTP.6.0'); } catch (e) {}
+          try { return new window.ActiveXObject('Msxml2.XMLHTTP.3.0'); } catch (f) {}
+          try { return new window.ActiveXObject('Msxml2.XMLHTTP'); } catch (g) {}
+          throw new Error('This browser does not support XMLHttpRequest.');
+        };
+      }
+
+      request = new XMLHttpRequest();
+
+      try {
+        request.open('GET', url);
+      } catch(e) {
+        onError(e);
+      }
+
+      request.onreadystatechange = function() {
+        if (request.readyState === 4) {
+          if (request.status === 200 || local && request.status === 0) {
+            onSuccess(request.responseText);
+          } else {
+            if (onError) {
+              onError();
+            }
+          }
+        }
+      };
+
+      try {
+        request.send();
+      } catch(e) {
+        if (onError) {
+          onError(e);
+        } // end if
+      } // end try/catch
+    } // end else
+  }
+
+  function openxPixelSuccess(respObj) {
+    fireOpenxPixel( xmlFromString(respObj) );
+  }
+
+  function fireOpenxPixel(xml) {
+    var impression = xml.getElementsByTagName("Impression"),
+			allTrackingEvents = xml.getElementsByTagName("Tracking"),
+			eventName,
+			eventObject,
+			i;
+
+			if(impression.length && allTrackingEvents.length) {
+
+				eventObject = {
+					'impression': impression[0].childNodes[0].data,
+					'creativeView':'',
+					'start':'',
+					'midpoint':'',
+					'firstQuartile':'',
+					'thirdQuartile':'',
+					'complete':'',
+					'mute':'',
+					'unmute':'',
+					'pause':'',
+					'rewind':'',
+					'resume':''
+				};
+
+				for(i = 0; i < allTrackingEvents.length; i++) {
+					eventName = allTrackingEvents[i].getAttribute('event');
+					if(eventObject.hasOwnProperty(eventName)) {
+						eventObject[eventName] = allTrackingEvents[i].childNodes[0].data;
+					}
+				}
+
+				T360_config.eventObject = eventObject;
+
+				// fire page load pixel ASAP, function defined in IIFE
+				firePageLoadPixel();
+
+				// start looking for target divs
+				checkForTargets();
+
+				// check for mobile then fire pixel, function defined in IIFE
+				checkMobileFirePixel();
+
+			} else {
+
+      // there was no impression found, we need to make another fake OpenX ad call and get impression pixel
+      get(openxPixelUrl, openxPixelSuccess, openxPixelError);
+
+    }
+  }
+
+  function firePageLoadPixel() {
+		var img = new Image();
+		img.src = T360_config.eventObject['creativeView'];
+  }
+
+  function checkMobileFirePixel() {
+		if(!T360_userAgent.isMobileBrowser()) {
+			var fireMobileCheckPixel = new Image();
+			fireMobileCheckPixel.src = T360_config.eventObject['start'];
+		}
+	}
+
+  function xmlFromString(string) {
+    if (!string)
+      return false;
+    var message = "";
+    if (window.DOMParser) {
+      var parser = new DOMParser();
+      try {
+        xmlDoc = parser.parseFromString (string, "text/xml");
+      } catch (e) {
+        return false;
+      }
+    } else {
+      if (typeof (ActiveXObject) == "undefined") {
+        debug("Cannot create XMLDocument object");
+        return false;
+      }
+      ids = ["Msxml2.DOMDocument.6.0", "Msxml2.DOMDocument.5.0", "Msxml2.DOMDocument.4.0", "Msxml2.DOMDocument.3.0", "MSXML2.DOMDocument", "MSXML.DOMDocument"];
+      for (var i = 0, il = ids.length; i < il; ++i) {
+        try {
+          xmlDoc = new ActiveXObject(ids[i]);
+          break;
+        } catch (e) {}
+      }
+      if (!xmlDoc) {
+        debug("Cannot create XMLDocument object");
+        return false;
+      }
+      xmlDoc.loadXML(string);
+
+      if (xmlDoc.parseError && xmlDoc.parseError.errorCode !== 0) {
+        return false;
+      } else {
+        if (xmlDoc.documentElement) {
+          if (xmlDoc.documentElement.nodeName == "parsererror") {
+          }
+        } else {
+        }
+      }
+    }
+    return xmlDoc;
+  }
+
+  function openxPixelError() {
+  }
+
+
+
+  var openxTracker = T360_config.openxPixel ? 'http://ox-d.tribal360.com/v/1.0/av?auid='+T360_config.openxPixel : 'http://ox-d.tribal360.com/v/1.0/av?auid=483347';
+
+  get(openxTracker, openxPixelSuccess, openxPixelError);
+
+
+
+
 	// a function to load dependencies in callbacks
 	function loadJS(src, callback) {
 		var s = document.createElement('script');
@@ -194,6 +369,10 @@
 
 		// we only want to load our scripts if the target divs are there
 		if(document.getElementById(T360_config.videoArea) && document.getElementById(T360_config.displayAdContainer)) {
+
+			// we have the target divs, fire the firstQuartile pixel
+			var fireTargetDivsPixel = new Image();
+			fireTargetDivsPixel.src = T360_config.eventObject['firstQuartile'];
 
 			// we have the target divs, now make sure it's not mobile
 			if(!T360_userAgent.isMobileBrowser()) {
@@ -224,10 +403,18 @@
 
 			if(country === 'US') {
 
+				// we're in the U.S., fire a geography ('midpoint') pixel
+				var fireGeographyPixel = new Image();
+				fireGeographyPixel.src = T360_config.eventObject['midpoint'];
+
 				// LOAD JW and then set KEY
 				loadJS('http://d2s1vwfhtsw5uw.cloudfront.net/assets/jwplayer.js', function() {
 					//console.log('loaded jwplayer.js');
 					jwplayer.key="O4uKyOWAS48nIe/23zZ9t1+EqL+uT02HD7RZBg==";
+
+					// JW is loaded, fire jw loaded pixel (thirdquartile)
+					var fireJWscriptLoadedPixel = new Image();
+					fireJWscriptLoadedPixel.src = T360_config.eventObject['thirdQuartile'];
 
 					// LOAD OPENX and then add the 'displayAd' div for targeting
 					loadJS('http://ox-d.tribal360.com/w/1.0/jstag', function() {
@@ -237,6 +424,10 @@
 						// loadJS('http://d2s1vwfhtsw5uw.cloudfront.net/assets/t360.min.js', function() {
 						loadJS('t360.js', function() {
 							//console.log('loaded t360');
+
+							// t360 is loaded, fire that pixel (complete)
+							var fireT360scriptLoadedPixel = new Image();
+							fireT360scriptLoadedPixel.src = T360_config.eventObject['complete'];
 
 							// init!!!!
 							T360.init(T360_config);
@@ -253,6 +444,10 @@
 							bim_div.appendChild(bim_img);
 							document.getElementsByTagName("body")[0].appendChild(bim_div);
 
+							// fire MDot script loaded pixel (mute)
+							var fireMDotScriptLoadedPixel = new Image();
+							fireMDotScriptLoadedPixel.src = T360_config.eventObject['mute'];
+
 						}); // end t360.js
 					}); // end openx.js
 				}); // end jwplayer.js
@@ -260,7 +455,6 @@
 		}); // end first loadJS()
 	} // end loadEverything()
 
-// start looking for target divs
-checkForTargets();
+
 
 })();

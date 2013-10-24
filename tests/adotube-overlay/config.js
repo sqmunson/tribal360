@@ -7,7 +7,7 @@ T360_config = {
 	vpaidFailover : true,
 	openxPixel : '483347',
 	openx : '474222', // PUBLISHER SPECIFIC, OpenX's 'auid' variable
-	adapt : 'adotubeOverlayTest', // PUB SPECIFIC, need to figure out what parameter we want to use: 'site'?
+	adapt : '', // PUB SPECIFIC, need to figure out what parameter we want to use: 'site'?
 	//customPixel : 'http://ads.blutonic.com/imptr?id=4257&t=2'
 };
 

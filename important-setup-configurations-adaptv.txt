@@ -1,0 +1,169 @@
+We have three loaders:
+	normal
+	worldwide
+	autoloader without companion
+		one that gets called inside a DFP (Cheezburger)
+		one that gets embedded without companion (like EliteDaily)
+
+We have two t360 files:
+	normal
+	autoloader (has no companion stuff, used on cheezburger and EliteDaily)
+
+
+
+
+
+SOURCES ///////////
+
+	-sources are groups of sites with the same settings.
+	-the only settings that set them apart are: companion (y/n) & ad format (preroll/overlay)
+	-each source gets it's own adap ad tag, so if all sites can be grouped together I don't need the Adap ID in the config.
+	-I could have a special variable for custom Adap source tags: customAdapSource : true, adapID: kLKJHDAkhjsSADkkjs
+	 this could override the Ad tag that's embedded in the T360 that is used for 99% of sites
+
+	SO, the grouping could go:
+	---------------------
+	T360 PreRoll + Companion
+	T360 PreRoll No Companion
+	T360 Overlay
+
+
+	The current grouping is:
+	----------------------
+	Elite Daily Direct Tag
+	Elite Daily T360 Player No Companion
+	T360 Adotube Overlay Test without OML
+	T360 Overlay Test
+	T360 PreRoll + Companion
+	T360 PreRoll No Companion
+
+
+
+
+
+AD PLACEMENTS //////////////
+
+	Q1 Media Campaigns
+	-------------------
+		(individual ads for each pub)
+
+	Adotube PreRoll
+	-------------------
+		Adotube PreRoll RON
+			Creative: AdoTube VPAID
+		AdoTube EliteDaily PreRoll Direct Tag
+			Creative: AdoTube EliteDaily PreRoll 9 Direct
+		AdoTube EliteDaily T360 PLayer PreRoll
+			Creative: AdoTube EliteDaily PreRoll 9
+		AdoTube PreRoll Mute No Companion (was made testing on Cheezburger)
+			Creative: AdoTube VPAID PreRoll Mute No Companion
+
+	Testing Only
+	------------------
+		T360 RON PreRoll and Companion Test (should be the only test ad)
+			Creative: Adap Test PreRoll + Companion
+
+	SpotX
+	-------------------
+		SpotX PreRoll EliteDaily
+		SpotX PreRoll RON
+		SpotX Pre-roll - Live Campaign (need to get rid of)
+		SpotX PreRoll Mute No Companion (was made for testing Cheezburger, paused)
+
+	Adconion
+	-------------------
+		Adconion EliteDaily PreRoll
+		Adconion Preroll RON
+		Adconion PreRoll Mute No Companion
+
+	Adotube Overlay Campaign
+	----------------------
+		AdoTube Overlay Test for Network (need to test)
+		AdoTube Overlay as Linear (need to test)
+
+
+
+
+
+
+
+
+CREATIVES //////////////////////
+
+	Adconion PreRoll US
+	--------------------
+		Format: VAST with VPAID Support
+		Tag: http://ad.amgdgt.com/ads/?t=dr&f=vast2&p=10132&pl=d4f85b75&rnd=${AdPlayer.cachebreaker}
+		Start Muted: No
+		Enable Mute: No
+
+	Adconion PreRoll US Mute No Companion
+	---------------------------
+		Format: VAST with VPAID Support
+		Tag: http://ad.amgdgt.com/ads/?t=dr&f=vast2&p=10132&pl=d4f85b75&rnd=${AdPlayer.cachebreaker}
+		Start Muted: Yes
+		Enable Mute: Yes
+
+	AdoTube EliteDaily PreRoll 9
+	-------------------------
+		Format: Adotube Pre-roll (AS3)
+		Tag (OML source): http://www.adotube.com/php/services/player/OMLService.php?avpid=2RL6sVa&ad_type=pre-rolls&groupbypass=1&vpaid=1&rtb=0&platform_version=vast20as3&publisher=${pub.homepage}&http_ref=${embeddingPageUrl}&publisher=eliteDailyT360Player
+
+	AdoTube EliteDaily PreRoll 9 Direct (used in AD: AdoTube EliteDaily PreRoll Direct Tag)
+	----------------------------
+		Format: Adotube Pre-roll (AS3)
+		Tag (OML source): http://www.adotube.com/php/services/player/OMLService.php?avpid=2RL6sVa&ad_type=pre-rolls&groupbypass=1&vpaid=1&rtb=0&platform_version=vast20as3&publisher=${pub.homepage}&http_ref=${embeddingPageUrl}&publisher=eliteDailyDirect
+
+	AdoTube Overlay
+	-----------------------------
+		Format: Adotube Overlay
+		Tag (OML Source): http://www.adotube.com/php/services/player/OMLService.php?avpid=GhjnASy&ad_type=overlays
+
+	AdoTube Overlay as Linear
+	------------------------------
+		Format: VAST with VPAID Support
+		Tag (OML source): http://www.adotube.com/kernel/vast/vast.php?omlSource=http://www.adotube.com/php/services/player/OMLService.php?avpid=GhjnASy&ad_type=overlays&vpaid=1&rtb=0&platform_version=vast20as3
+
+	AdoTube Overlay OML
+	----------------------------
+		Format: Adotube Overlay
+		Tag (OML source): http://www.adotube.com/php/services/player/OMLService.php?avpid=GhjnASy&ad_type=overlays&vpaid=1&rtb=0&platform_version=vast20as3
+
+	AdoTube Overlay without OML
+	-----------------------------
+		Format: VAST non-linear (allows VPAID, AS3 only)
+		Tag: http://www.adotube.com/kernel/vast/vast.php?omlSource=http://www.adotube.com/php/services/player/OMLService.php?avpid=GhjnASy&ad_type=overlays&vpaid=1&rtb=0&platform_version=vast20as3
+
+	AdoTube VPAID (used in AD: AdoTube PreRoll RON)
+	-----------------------------
+		Format: VAST with VPAID Support
+		Tag: http://www.adotube.com/kernel/vast/vast.php?omlSource=http://www.adotube.com/php/services/player/OMLService.php?avpid=Ojp0CIo&ad_type=pre-rolls&vpaid=1&rtb=0&platform_version=vast20as3&publisher=${pub.homepage}&http_ref=${embeddingPageUrl}
+
+	Adotube VPAID Pre-roll Test
+		Format: Adotube Pre-roll (AS3)
+		Tag (OML source): http://www.adotube.com/php/services/player/OMLService.php?avpid=Ojp0CIo&ad_type=pre-rolls&vpaid=1&rtb=0&platform_version=vast20as3&publisher=${pub.homepage}&http_ref=${embeddingPageUrl}
+
+	Adotube VPAID PreRoll Mute No Companion
+		Format: VAST with VPAID support
+		Tag: http://www.adotube.com/kernel/vast/vast.php?omlSource=http://www.adotube.com/php/services/player/OMLService.php?avpid=Ojp0CIo&ad_type=pre-rolls&vpaid=1&rtb=0&platform_version=vast20as3&publisher=${pub.homepage}&http_ref=${embeddingPageUrl}
+		Start Muted: yes
+		Enable mute: yes
+
+	Q1 - ladolcevitae
+	Q1 - redbookmag
+	Q1 - roadandtrack
+
+	SpotX Pre-roll - Live
+		Format: VAST with VPAID Support
+		Tag: http://search.spotxchange.com/vast/2.00/85776?VPAID=1&content_page_url=http%3A%2F%2F${embeddingPageUrl}&cb=${AdPlayer.cachebreaker}
+
+	SpotX PreRoll Mute No Companion
+		Format: VAST with VPAID support
+		Tag: http://search.spotxchange.com/vast/2.00/85776?VPAID=1&content_page_url=http%3A%2F%2F${embeddingPageUrl}&cb=${AdPlayer.cachebreaker}
+
+	SpotX Test
+		Format: VAST with VPAID support
+		Tag: http://search.spotxchange.com/vast/2.00/74856?VPAID=1&content_page_url=http%3A%2F%2F${embeddingPageUrl}&cb=${AdPlayer.cachebreaker}
+
+	Adap Test PreRoll + Companion
+		Tag: 1st Party Served, don't mess with

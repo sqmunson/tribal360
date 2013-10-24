@@ -1,7 +1,7 @@
 T360_config = {
 	autoplay : true,
 	autoplayOnView : false,
-	feedUrl : 'http://tribal360.com/assets/feeder.php?feed=https://buzz60.com/b60-mrss/view/Tribal360%20Feed%20Entertainment/unw3enu5g83fe5s84gle',
+	feedUrl : 'http://tribal360.com/assets/feeder.php?feed=http://celebritychef.tv/video-feed/',
 	displayAdContainer : 't360_display',
 	videoArea : 't360_video',
 	vpaidFailover : true,

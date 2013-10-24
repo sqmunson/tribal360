@@ -1,12 +1,14 @@
 T360_config = {
-	autoplay : true,
+	autoplay : false,
+	autoplayOnView : true,
 	feedUrl : 'http://tribal360.com/assets/feeder.php?feed=http://travelbig.com/video-feed/',
 	displayAdContainer : 't360_display',
 	videoArea : 't360_video',
 	vpaidFailover : true,
 	openxPixel : '491074',
 	openx : '491073',
-	adapt : 'pasta',
+	adapt : 'AiVnje_CA3BJsRMP0_gPXAtRyCRFRZSd',
+	utag : true
 };
 
 (function(){

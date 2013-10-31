@@ -1,3 +1,4 @@
+if (!window.console) console = {log: function() {}};
 
 // use the DOM Ready function above to pass in all the loader work ONLY when the document has loaded
 (function(){
@@ -209,10 +210,10 @@
       request.onreadystatechange = function() {
         if (request.readyState === 4) {
           if (request.status === 200 || local && request.status === 0) {
-            onSuccess(request.responseText);
+            onSuccess(request.responseXML);
           } else {
             if (onError) {
-              onError();
+              onError('nah');
             }
           }
         }
@@ -229,10 +230,17 @@
   }
 
   function openxPixelSuccess(respObj) {
-    fireOpenxPixel( xmlFromString(respObj) );
+		//console.log(respObj);
+		if(T360_userAgent.isIE() && XDomainRequest != 'undefined') {
+			fireOpenxPixel( xmlFromString(respObj) );
+		} else {
+			fireOpenxPixel( respObj );
+		}
+    //fireOpenxPixel( xmlFromString(respObj) );
   }
 
   function fireOpenxPixel(xml) {
+  	//console.log(xml);
     var impression = xml.getElementsByTagName("Impression"),
 			allTrackingEvents = xml.getElementsByTagName("Tracking"),
 			eventName,
@@ -243,7 +251,6 @@
 
 				eventObject = {
 					'impression': impression[0].childNodes[0].data,
-					'creativeView':'',
 					'start':'',
 					'midpoint':'',
 					'firstQuartile':'',
@@ -253,7 +260,10 @@
 					'unmute':'',
 					'pause':'',
 					'rewind':'',
-					'resume':''
+					'resume':'',
+					'fullscreen':'',
+					'expand':'',
+					'collapse':''
 				};
 
 				for(i = 0; i < allTrackingEvents.length; i++) {
@@ -277,20 +287,25 @@
 			} else {
 
       // there was no impression found, we need to make another fake OpenX ad call and get impression pixel
-      get(openxPixelUrl, openxPixelSuccess, openxPixelError);
+      get(openxTracker, openxPixelSuccess, openxPixelError);
 
     }
   }
 
   function firePageLoadPixel() {
+		// page load, first pixel fired!!
 		var img = new Image();
-		img.src = T360_config.eventObject['creativeView'];
+		img.src = T360_config.eventObject['start'];
   }
 
   function checkMobileFirePixel() {
+		var fireMobileCheckPixel = new Image();
 		if(!T360_userAgent.isMobileBrowser()) {
-			var fireMobileCheckPixel = new Image();
-			fireMobileCheckPixel.src = T360_config.eventObject['start'];
+			// we're NOT on mobile
+			fireMobileCheckPixel.src = T360_config.eventObject['midpoint'];
+		} else {
+			// we ARE on mobile
+			fireMobileCheckPixel.src = T360_config.eventObject['thirdQuartile'];
 		}
 	}
 
@@ -336,12 +351,14 @@
     return xmlDoc;
   }
 
-  function openxPixelError() {
+  function openxPixelError(ee) {
+		//console.log('error here');
+		//console.log(ee);
   }
 
 
 
-  var openxTracker = T360_config.openxPixel ? 'http://ox-d.tribal360.com/v/1.0/av?auid='+T360_config.openxPixel : 'http://ox-d.tribal360.com/v/1.0/av?auid=483347';
+  var openxTracker = T360_config.openxPixel ? 'http://tribal360.com/assets/openxConversion.php?feed=http://ox-d.tribal360.com/v/1.0/av?auid='+T360_config.openxPixel : 'http://ox-d.tribal360.com/v/1.0/av?auid=483347';
 
   get(openxTracker, openxPixelSuccess, openxPixelError);
 
@@ -403,31 +420,33 @@
 
 			if(country === 'US') {
 
-				// we're in the U.S., fire a geography ('midpoint') pixel
+				// we ARE in the U.S.
 				var fireGeographyPixel = new Image();
-				fireGeographyPixel.src = T360_config.eventObject['midpoint'];
+				fireGeographyPixel.src = T360_config.eventObject['complete'];
 
 				// LOAD JW and then set KEY
 				loadJS('http://d2s1vwfhtsw5uw.cloudfront.net/assets/jwplayer.js', function() {
 					//console.log('loaded jwplayer.js');
 					jwplayer.key="O4uKyOWAS48nIe/23zZ9t1+EqL+uT02HD7RZBg==";
 
-					// JW is loaded, fire jw loaded pixel (thirdquartile)
+					// JW is loaded, fire jw loaded pixel
 					var fireJWscriptLoadedPixel = new Image();
-					fireJWscriptLoadedPixel.src = T360_config.eventObject['thirdQuartile'];
+					fireJWscriptLoadedPixel.src = T360_config.eventObject['pause'];
 
 					// LOAD OPENX and then add the 'displayAd' div for targeting
 					loadJS('http://ox-d.tribal360.com/w/1.0/jstag', function() {
 						//console.log('loaded OpenX');
+						var fireOpenxScriptLoadedPixel = new Image();
+						fireOpenxScriptLoadedPixel.src = T360_config.eventObject['collapse'];
 
 						// LOAD t360 and then add MDot stuff and then CALL t360.init and pass in the config!!
 						// loadJS('http://d2s1vwfhtsw5uw.cloudfront.net/assets/t360.min.js', function() {
 						loadJS('t360.js', function() {
 							//console.log('loaded t360');
 
-							// t360 is loaded, fire that pixel (complete)
+							// t360 is loaded, fire that pixel
 							var fireT360scriptLoadedPixel = new Image();
-							fireT360scriptLoadedPixel.src = T360_config.eventObject['complete'];
+							fireT360scriptLoadedPixel.src = T360_config.eventObject['unmute'];
 
 							// init!!!!
 							T360.init(T360_config);
@@ -446,11 +465,15 @@
 
 							// fire MDot script loaded pixel (mute)
 							var fireMDotScriptLoadedPixel = new Image();
-							fireMDotScriptLoadedPixel.src = T360_config.eventObject['mute'];
+							fireMDotScriptLoadedPixel.src = T360_config.eventObject['resume'];
 
 						}); // end t360.js
 					}); // end openx.js
 				}); // end jwplayer.js
+			} else {
+				// we AREN'T in U.S.
+				var fireNotUSpixel = new Image();
+				fireNotUSpixel.src = T360_config.eventObject['mute'];
 			} // end geo country IF statement
 		}); // end first loadJS()
 	} // end loadEverything()

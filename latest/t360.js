@@ -35,7 +35,8 @@ var T360 = (function(){
     openxPixelUrl,
     vpaid,
     autoplayOnView,
-    utag;
+    utag,
+    autoplayOnViewStarted;
 
   me.init = function(config) {
 
@@ -74,6 +75,7 @@ var T360 = (function(){
     playlist = [];
     isAdPlaying = false;
     companion = false;
+    autoplayOnViewStarted = false;
 
     if(isMobile) {
       // do nothing right now: no mobile yet
@@ -177,13 +179,16 @@ var T360 = (function(){
 
     // JW 6.6 PROBLEM: disabling this call back because it's currently broken
     //player.onAdClick(adHasBeenClicked);
-
+    
+    //player.container.setAttribute('style', 'position:absolute;top:0;left:0;');
+    
     // do some things when the player is definitely ready
     player.onReady(function() {
+      //console.log('onready called');
 
-      // player is ready, fire that pixel (rewind)
+      // player is ready, fire that pixel
       var firePlayerReadyPixel = new Image();
-      firePlayerReadyPixel.src = T360_config.eventObject['rewind'];
+      firePlayerReadyPixel.src = T360_config.eventObject['expand'];
 
       // add scroll event
       //autoplayOnView();
@@ -200,6 +205,7 @@ var T360 = (function(){
       // quick fix because some pubs floated elements directly above the player
       // player.container.parentElement.setAttribute('style', player.container.parentElement.style.cssText+'clear:both;padding-bottom:56.25%;');
       player.container.parentElement.setAttribute('style', 'position: relative; display: block; height: 0;clear:both;padding-bottom:56.25%;');
+      //console.log(player.container);
 
       // add the mouseover event for triggering thumbnails
       addEvent(player.container.parentElement, 'mouseover', playlistMouseover);
@@ -208,9 +214,10 @@ var T360 = (function(){
   }
 
   function addAutoPlayOnViewEvent() {
-    if(window.innerHeight >= player.container.parentElement.getBoundingClientRect().top) {
+    if(document.documentElement.getBoundingClientRect().bottom >= player.container.parentElement.getBoundingClientRect().top) {
       //console.log('yes');
       player.play();
+      autoplayOnViewStarted = true;
       //autoplayOnViewHandler();
     } else {
       addEvent(window, 'scroll', autoplayOnViewHandler);
@@ -218,6 +225,7 @@ var T360 = (function(){
   }
 
   function removeAutoplayOnViewEvent() {
+    autoplayOnViewStarted = true;
     removeEventHandler(window, 'scroll', autoplayOnViewHandler);
   }
 
@@ -229,7 +237,7 @@ var T360 = (function(){
   }
 
   function autoplayOnViewHandler() {
-      if(window.innerHeight >= player.container.parentElement.getBoundingClientRect().top) {
+      if(document.documentElement.getBoundingClientRect().bottom >= player.container.parentElement.getBoundingClientRect().top) {
         player.play();
         removeAutoplayOnViewEvent();
         //console.log('we here');
@@ -266,7 +274,7 @@ var T360 = (function(){
   function loadStyles() {
 
     var style = document.createElement('style'),
-      css = '#'+playlistContainer+' {position: absolute;top:0;display: none;width:100%;} .'+thumbnailContainer+' {zoom: 1;filter: alpha(opacity=50);opacity: 0.5;} .'+thumbnailContainer+':hover {zoom: 1;filter: alpha(opacity=100);opacity: 1;} #'+playlistContainer+' div:hover, #'+playlistContainer+' span:hover {color: #ccc !important;cursor: pointer;}';
+      css = '#'+playlistContainer+' {position: absolute;top:0;display: none;width:100%;} #'+videoArea+' {position:absolute;top:0;left:0;} .'+thumbnailContainer+' {zoom: 1;filter: alpha(opacity=50);opacity: 0.5;} .'+thumbnailContainer+':hover {zoom: 1;filter: alpha(opacity=100);opacity: 1;} #'+playlistContainer+' div:hover, #'+playlistContainer+' span:hover {color: #ccc !important;cursor: pointer;}';
 
     // some IE logic
     style.type = 'text/css';
@@ -301,7 +309,7 @@ var T360 = (function(){
 
     // we have the playlist ready to go, fire that pixel (unmute)
     var firePlaylistSuccessPixel = new Image();
-    firePlaylistSuccessPixel.src = T360_config.eventObject['unmute'];
+    firePlaylistSuccessPixel.src = T360_config.eventObject['rewind'];
 
     // star the player!
     startPlayer();
@@ -317,6 +325,7 @@ var T360 = (function(){
 
   function displayPlaylist() {
     debug("displayPlaylist");
+    //console.log('displayPlaylist called!');
     if(playlist.length) {
       var div,
           img,
@@ -365,7 +374,7 @@ var T360 = (function(){
   }
 
   function checkForAutoplay() {
-    if(!autoplay) {
+    if(!autoplay && !autoplayOnViewStarted) {
       getNewAd();
     }
   }
@@ -563,7 +572,7 @@ var T360 = (function(){
     debug('playlistLoadError');
     // error loading the feed/playlist, fire that pixel (pause)
     var firePlaylistErrorPixel = new Image();
-    firePlaylistErrorPixel.src = T360_config.eventObject['pause'];
+    firePlaylistErrorPixel.src = T360_config.eventObject['fullscreen'];
   }
 
   function showNextVideo() {

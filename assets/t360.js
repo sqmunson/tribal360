@@ -649,7 +649,7 @@ var T360 = (function(){
   // HELPER FUNCTIONS: debug(), get(), addEvent()
 
   function debug() {
-    //console.log(arguments);
+    console.log(arguments);
   }
 
   function get(url, onSuccess, onError){

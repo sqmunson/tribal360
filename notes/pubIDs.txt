@@ -1,0 +1,91 @@
+RON Adap ID:
+	AiVnje_CA3BJsRMP0_gPXAtRyCRFRZSd
+
+RON Adap PreRoll No Companion ID:
+	AiVnje_CA3BJsRMP0_gPXJRJT5QEdCo6TnBiHbbScM4TEvJhSYQ8cw==
+
+TEST PUBLISHER:
+	openxPixel: 483347
+	openx: 474222
+
+Test Stream Initiation Pixel Ad Unit #2: 483978
+
+roadandtrack:
+	openxPixel: 486416
+	openx: 484157
+
+ladolcevitae:
+	openxPixel: 486406
+	openx: 484145
+
+highwaytofame:
+	openxPixel: 486420
+	openx: 484152
+
+redbookmag:
+	openxPixel: 486422
+	openx: 486419
+
+newfacets:
+	openxPixel: 486423
+	openx: 484158
+
+travelbase:
+	openxPixel: 486424
+	openx: 486421
+
+surebaby:
+	openxPixel: 487203
+	openx: 487200
+
+elitedaily:
+	openxPixel: 489953
+	openx: 489954
+
+pasta:
+	openxPixel: 491074
+	openx: 491073
+
+
+thecelebritycafe:
+	openxPixel: 494250
+	openx: 494249
+
+failblogcheezburger:
+	openxPixel: 494269
+	openx: 494255
+
+
+celebritychef.tv:
+	openxPixel: 495582
+	openx: 495581
+
+celebritytravel.tv:
+	openxPixel: 495584
+	openx: 495583
+
+topvideoviews:
+	openxPixel: 496953
+	openx: 496954
+
+gamespot:
+	openxPixel: 498268
+	openx: 498232
+
+gossipcenter:
+	openxPixel: 498272
+	openx: 498236
+
+herdaily:
+	openxPixel: 498274
+	openx: 498237
+
+yumsugar:
+	openxPixel: 498278
+	openx: 498235
+
+TO DO:
+
+cosmo:
+	openxDisplay: 484131
+

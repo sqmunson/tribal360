@@ -1,0 +1,39 @@
+'creativeView': page load
+'firstQuartile': we have the traget divs
+'start': we know its not mobile
+'midpoint': we know its the U.S.
+'thirdQuartile': jw script is loaded
+'complete': t360 script is loaded
+'mute': mdot script is loaded
+'unmute': playlist is sucessfully fetched
+'pause': playlist fetch failed
+'rewind': player is ready
+'impression': stream initaitation
+'resume': page unload
+
+
+'fullscreen'
+'expand'
+'collapse'
+'acceptInvitation'
+'close'
+
+need something that fires if we can't get the all these pixels! If the fake VAST call fails!
+
+
+start: page load
+firstQuartile: we have target divs
+midpoint: we know it's not mobile
+thirdQuartile: it IS mobile
+complete: we know it's U.S.
+muted: it INS't U.S.
+paused: jw script loaded
+collapse: openx script loaded
+unmuted: t360 script laoded
+resume: mdot script loaded
+rewind: playlist IS loaded
+fullscreen: playlist DIDN'T load
+expand: player is ready
+impression: stream init
+
+

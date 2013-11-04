@@ -1,0 +1,71 @@
+
+FOR LA DOLCE AND RED BOOK:
+	adapt : 'AiVnje_CA3BJsRMP0_gPXAtRyCRFRZSd',
+
+ELITE DIRECT TAG:
+http://u-ads.adap.tv/a/h/H3IEFTyrw3wirU5miuKT2HvRvj4wKwdIxKGG0Ed2SNE=?cb=[CACHE_BREAKER]&pageUrl=[PAGE_URL]&description=VIDEO_DESCRIPTION&duration=VIDEO_DURATION&id=VIDEO_ID&keywords=VIDEO_KEYWORDS&title=VIDEO_TITLE&url=VIDEO_URL&eov=eov
+
+CUSTOM ADOTUBE PARAMETERS:
+for direct tag: publisher=eliteDailyDirect
+for player tag: publisher=eliteDailyT360Player
+
+
+
+
+OVERLAY:
+http://u-ads.adap.tv/a/h/pTqxIPaT8gKxSoMoNdwC_l7grfG5xBHZ8+V5Bagt1q0=?cb=__timestamp__&pageUrl=__page-url__&eov=eov
+
+ANOTHER OVERLAY TEST:
+http://u-ads.adap.tv/a/h/AiVnje_CA3BlBrLco5GggHEvWmbXlYUIaMoC65y_A1si+7NvBEm12Gglxj4meKFF?cb=[CACHE_BREAKER]&pageUrl=http%3A%2F%2Ftribal360.com&eov=eov
+
+
+http://u-ads.adap.tv/a/h/pTqxIPaT8gKxSoMoNdwC_l7grfG5xBHZ8+V5Bagt1q0=?cb=[CACHE_BREAKER]&pageUrl=http%3A%2F%2Ftribal360.com&description=VIDEO_DESCRIPTION&duration=VIDEO_DURATION&id=VIDEO_ID&keywords=VIDEO_KEYWORDS&title=VIDEO_TITLE&url=VIDEO_URL&eov=eov
+
+
+
+http://www.adotube.com/kernel/vast/vast.php?omlSource=http://www.adotube.com/php/services/player/OMLService.php?avpid=GhjnASy&ad_type=overlays&vpaid=1&rtb=0&platform_version=vast20as3&publisher=%5BBASE_DOMAIN_URL%5D&title=%5BVIDEO_TITLE%5D&tags=%5BVIDEO_TAGS%5D&description=%5BVIDEO_DESCRIPTION%5D&videoURL=%5BVIDEO_FILE_URL%5D&http_ref=%5BHTTP_REFERRER%5D
+
+ELITE PREROLL:
+http://www.adotube.com/php/services/player/OMLService.php?avpid=2RL6sVa&ad_type=pre-rolls&groupbypass=1&vpaid=1&rtb=0&platform_version=vast20as3&publisher=${pub.homepage}&http_ref=${embeddingPageUrl}
+
+
+
+
+
+
+
+
+
+
+
+
+
+http://www.adotube.com/php/services/player/OMLService.php?avpid=Ojp0CIo&ad_type=pre-rolls
+&vpaid=1&rtb=0&platform_version=vast20as3&publisher=${pub.homepage}&http_ref=${embeddingPageUrl}
+
+http://www.adotube.com/php/services/player/OMLService.php?avpid=Ojp0CIo&ad_type=pre-rolls
+
+
+
+
+
+
+
+http://www.adotube.com/php/services/player/OMLService.php?avpid=GhjnASy&ad_type=overlays
+&vpaid=1&rtb=0&platform_version=vast20as3&publisher=${pub.homepage}&http_ref=${embeddingPageUrl}
+
+http://www.adotube.com/php/services/player/OMLService.php?avpid=GhjnASy&ad_type=overlays
+
+
+
+
+
+
+Q1 - redbookmag
+http://ad4.liverail.com/?LR_PUBLISHER_ID=20344&LR_SCHEMA=vast2-vpaid&LR_VERTICAL=preroll&LR_URL=${embeddingPageUrl}&LR_AUTOPLAY=0&LR_CONTENT=6&LR_MUTED=0
+
+Q1 - ladolcevitae
+http://ad4.liverail.com/?LR_PUBLISHER_ID=19942&LR_SCHEMA=vast2-vpaid&LR_VERTICAL=preroll&LR_URL=${embeddingPageUrl}&LR_AUTOPLAY=0&LR_CONTENT=6&LR_MUTED=0
+
+Q1 - roadandtrack
+http://ad4.liverail.com/?LR_PUBLISHER_ID=20353&LR_SCHEMA=vast2-vpaid&LR_VERTICAL=preroll&LR_URL=${embeddingPageUrl}&LR_AUTOPLAY=0&LR_CONTENT=6&LR_MUTED=0

@@ -1,0 +1,16 @@
+LIVE FILES:
+	http://d2s1vwfhtsw5uw.cloudfront.net/assets/loader.min.js
+	http://d2s1vwfhtsw5uw.cloudfront.net/assets/t360.min.js
+	http://d2s1vwfhtsw5uw.cloudfront.net/assets/jwplayer.js
+	config.js (this is pub specific, we control excpet for BluTonic)
+
+SO: DO NOT overwrite these files on the Tribal360 site:
+ 	http://tribal360.com/assets/loader.min.js
+	http://tribal360.com/assets/t360.min.js
+	http://tribal360.com/assets/jwplayer.js
+	tribal360.com/assets/pubs/config.js (is this the folder I want to use???)
+
+AND: DO NOT overwrite these files on my local machine:
+	assets/loader.min.js
+	assets/t360.min.js
+	assets/jwplayer.js

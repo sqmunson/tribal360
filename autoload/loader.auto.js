@@ -1,8 +1,9 @@
-
-// use the DOM Ready function above to pass in all the loader work ONLY when the document has loaded
 (function(){
 
-	var UserAgentManager = {
+var maxChecker = 0,
+		pixelTracker = new Image(),
+		pixelUrl = 'http://secure-temple-8149.herokuapp.com/pixels/'+T360_config.pixelID+'?',
+		UserAgentManager = {
 		user_agent : '',
 		exclude_browsers : [],
 		browsers_map : [],
@@ -172,6 +173,20 @@
 	// assign results to global variable for later use
 	window.T360_userAgent = UserAgentManager;
 
+	if(T360_userAgent.isMobileBrowser()) {
+		// we ARE on mobile
+		pixelTracker.src = pixelUrl + 'event_guid='+guid()+'&event_type=mobile_true';
+	} else {
+		// we're NOT on mobile
+		pixelTracker.src = pixelUrl + 'event_guid='+guid()+'&event_type=mobile_false';
+		loadEverything();
+	}
+
+	function guid(){
+		var _0x18a1x29 = function (){return Math["\x66\x6C\x6F\x6F\x72"](Math["\x72\x61\x6E\x64\x6F\x6D"]()*0x10000).toString(16);};
+		return (_0x18a1x29()+_0x18a1x29()+"\x2D"+_0x18a1x29()+"\x2D"+_0x18a1x29()+"\x2D"+_0x18a1x29()+"\x2D"+_0x18a1x29()+_0x18a1x29()+_0x18a1x29());
+	}
+
 	// a function to load dependencies in callbacks
 	function loadJS(src, callback) {
 		var s = document.createElement('script');
@@ -197,19 +212,24 @@
 
 			if(country === 'US') {
 
+				// we ARE in the U.S.
+				pixelTracker.src = pixelUrl + 'event_guid='+guid()+'&event_type=US_true';
+
 				// LOAD JW and then set KEY
 				loadJS('http://d2s1vwfhtsw5uw.cloudfront.net/assets/jwplayer.js', function() {
 					//console.log('loaded jwplayer.js');
 					jwplayer.key="O4uKyOWAS48nIe/23zZ9t1+EqL+uT02HD7RZBg==";
 
-					// LOAD OPENX and then add the 'displayAd' div for targeting
-					//loadJS('http://ox-d.tribal360.com/w/1.0/jstag', function() {
-						//console.log('loaded OpenX');
+					// JW is loaded, fire jw loaded pixel
+					pixelTracker.src = pixelUrl + 'event_guid='+guid()+'&event_type=jw_loaded';
 
 						// LOAD t360 and then add MDot stuff and then CALL t360.init and pass in the config!!
 						//loadJS('http://d2s1vwfhtsw5uw.cloudfront.net/assets/t360.autoloader.min.js', function() {
-						loadJS('t360.js', function() {
-							//console.log('loaded t360');
+						loadJS('http://cdn.tribal360.com/asstes/t360.nocompanion.min.js', function() {
+
+							// t360 is loaded, fire that pixel
+							pixelTracker.src = pixelUrl + 'event_guid='+guid()+'&event_type=t360_loaded';
+
 
 							// init!!!!
 							T360.init(T360_config);
@@ -226,15 +246,16 @@
 							bim_div.appendChild(bim_img);
 							document.getElementsByTagName("body")[0].appendChild(bim_div);
 
+							// fire MDot script loaded pixel (mute)
+							pixelTracker.src = pixelUrl + 'event_guid='+guid()+'&event_type=mdot_loaded';
+
 						}); // end t360.js
-					//}); // end openx.js
 				}); // end jwplayer.js
+			} else {
+				// we AREN'T in U.S.
+				pixelTracker.src = pixelUrl + 'event_guid='+guid()+'&event_type=US_false';
 			} // end geo country IF statement
 		}); // end first loadJS()
 	} // end loadEverything()
-
-	if(!T360_userAgent.isMobileBrowser()) {
-		loadEverything();
-	}
 
 })();

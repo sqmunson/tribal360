@@ -30,7 +30,11 @@ var T360 = (function(){
     vpaid,
     autoplayOnView,
     utag,
-    automute;
+    autoplayOnViewStarted,
+    automute,
+    pixelTracker,
+    pixelID,
+    pixelUrl;
 
   me.init = function(config) {
 
@@ -53,6 +57,9 @@ var T360 = (function(){
     autoplayOnView = config.autoplayOnView || false;
     utag = config.utag || false;
     automute = config.automute || false;
+    pixelTracker = new Image();
+    pixelID = config.pixelID || 1;
+    pixelUrl = 'http://secure-temple-8149.herokuapp.com/pixels/'+config.pixelID+'?';
 
     // dynamic variables
     isMobile = T360_userAgent.isMobileBrowser();
@@ -64,6 +71,7 @@ var T360 = (function(){
     streamStarted = false;
     playlist = [];
     isAdPlaying = false;
+    autoplayOnViewStarted = false;
 
     if(isMobile) {
       // do nothing right now: no mobile yet
@@ -141,14 +149,17 @@ var T360 = (function(){
     //player.onAdClick(adHasBeenClicked);
 
     // check for automute
-    if(automute) {
+    //if(automute) {
       //player.setVolume(0);
       //player.setMute();
       //console.log('should be muted');
-    }
+    //}
 
     // do some things when the player is definitely ready
     player.onReady(function() {
+
+      // player is ready, fire that pixel
+      pixelTracker.src = pixelUrl + 'event_guid='+guid()+'&event_type=player_ready';
 
       // add scroll event
       //autoplayOnView();
@@ -160,7 +171,9 @@ var T360 = (function(){
       displayPlaylist();
 
       // quick fix because some pubs floated elements directly above the player
-      player.container.parentElement.setAttribute('style', player.container.parentElement.style.cssText+'clear:both;');
+      //player.container.parentElement.setAttribute('style', player.container.parentElement.style.cssText+'clear:both;');
+      player.container.parentElement.setAttribute('style', 'position: relative; display: block; height: 0;clear:both;padding-bottom:56.25%;');
+      //player.container.setAttribute('style', 'position:absolute;top:0;left:0;');
 
       // add the mouseover event for triggering thumbnails
       addEvent(player.container.parentElement, 'mouseover', playlistMouseover);
@@ -169,16 +182,16 @@ var T360 = (function(){
   }
 
   function addAutoPlayOnViewEvent() {
-    if(window.innerHeight >= player.container.parentElement.getBoundingClientRect().top) {
-      //console.log('yes');
+    if(document.documentElement.getBoundingClientRect().bottom >= player.container.parentElement.getBoundingClientRect().top) {
       player.play();
-      //autoplayOnViewHandler();
+      autoplayOnViewStarted = true;
     } else {
       addEvent(window, 'scroll', autoplayOnViewHandler);
     }
   }
 
   function removeAutoplayOnViewEvent() {
+    autoplayOnViewStarted = true;
     removeEventHandler(window, 'scroll', autoplayOnViewHandler);
   }
 
@@ -190,7 +203,7 @@ var T360 = (function(){
   }
 
   function autoplayOnViewHandler() {
-      if(window.innerHeight >= player.container.parentElement.getBoundingClientRect().top) {
+      if(document.documentElement.getBoundingClientRect().bottom >= player.container.parentElement.getBoundingClientRect().top) {
         player.play();
         removeAutoplayOnViewEvent();
         //console.log('we here');
@@ -200,7 +213,7 @@ var T360 = (function(){
   function loadStyles() {
 
     var style = document.createElement('style'),
-      css = '#'+playlistContainer+' {position: absolute;top:0;right: 5px;display: none;} .'+thumbnailContainer+' {zoom: 1;filter: alpha(opacity=50);opacity: 0.5;} .'+thumbnailContainer+':hover {zoom: 1;filter: alpha(opacity=100);opacity: 1;} #'+playlistContainer+' div:hover, #'+playlistContainer+' span:hover {color: #ccc !important;cursor: pointer;}';
+      css = '#'+playlistContainer+' {position: absolute;top:0;display: none;width:100%;} #'+videoArea+' {position:absolute;top:0;left:0;} .'+thumbnailContainer+' {zoom: 1;filter: alpha(opacity=50);opacity: 0.5;} .'+thumbnailContainer+':hover {zoom: 1;filter: alpha(opacity=100);opacity: 1;} #'+playlistContainer+' div:hover, #'+playlistContainer+' span:hover {color: #ccc !important;cursor: pointer;}';
 
     // some IE logic
     style.type = 'text/css';
@@ -225,6 +238,10 @@ var T360 = (function(){
         playlist[i]['poster'] = json.channel.item[i]['poster'];
         playlist[i]['title'] = json.channel.item[i]['title'];
     }
+
+    // we have the playlist ready to go, fire that pixel (unmute)
+    pixelTracker.src = pixelUrl + 'event_guid='+guid()+'&event_type=playlist_loaded';
+
     startPlayer();
   }
 
@@ -247,18 +264,20 @@ var T360 = (function(){
           i;
       container = document.createElement('div');
       container.setAttribute('id', playlistContainer);
-      thumbWidth = (playerWidth-((playlist.length+1)*10))/playlist.length;
+      //thumbWidth = (playerWidth-((playlist.length+1)*10))/playlist.length;
+      thumbWidth = (100 - (2*playlist.length))/playlist.length;
 
       for (i = 0; i < playlist.length; i++) {
         div = document.createElement('div');
         div.className = thumbnailContainer;
         div.setAttribute('id', thumbnailItemId + i);
-        div.setAttribute('style', 'float:left;width:'+thumbWidth+'px;height:120px;margin: 10px 5px 0px 5px;font-family:sans-serif;font-size:9px;line-height:1.6em;position:relative;overflow:hidden;');
+        //div.setAttribute('style', 'float:left;width:'+thumbWidth+'px;height:120px;margin: 10px 5px 0px 5px;font-family:sans-serif;font-size:9px;line-height:1.6em;position:relative;overflow:hidden;');
+        div.setAttribute('style', 'float:left;width:'+thumbWidth+'%;height:120px;margin: 2% 1% 0 1%;font-family:sans-serif;font-size:9px;line-height:1.6em;position:relative;overflow:hidden;');
         img = document.createElement('img');
         img.setAttribute('src', playlist[i]['thumbnail']);
         img.onload = adjustThumbnail;
         span = document.createElement('span');
-        span.setAttribute('style', 'position: absolute;bottom:0px;display:block;background-color:black;color:#aaaaaa;padding:5px;width:'+(thumbWidth-10)+'px;');
+        span.setAttribute('style', 'position: absolute;bottom:0px;display:block;background-color:black;color:#aaaaaa;padding:5%;width:90%;');
         span.innerHTML = playlist[i]['title'];
         addClickEvent(div, playlist[i]);
         div.appendChild(img);
@@ -272,14 +291,15 @@ var T360 = (function(){
   }
 
   function adjustThumbnail() {
-    var aspectRatio = this.width/this.height,
-        newWidth = 120*aspectRatio,
-        parentWidth = (playerWidth-((playlist.length+1)*10))/playlist.length;
-    if(newWidth > parentWidth) {
-      this.setAttribute('style', 'width:'+newWidth+'px;left:-'+(newWidth-parentWidth)/2+'px;position:relative;max-width:'+newWidth+'px;');
-    } else {
-      this.setAttribute('style', 'width:100%;position:relative;');
-    }
+    this.setAttribute('style', 'min-width:100%;min-height:100%;');
+    // var aspectRatio = this.width/this.height,
+    //     newWidth = 120*aspectRatio,
+    //     parentWidth = (playerWidth-((playlist.length+1)*10))/playlist.length;
+    // if(newWidth > parentWidth) {
+    //   this.setAttribute('style', 'width:'+newWidth+'px;left:-'+(newWidth-parentWidth)/2+'px;position:relative;max-width:'+newWidth+'px;');
+    // } else {
+    //   this.setAttribute('style', 'width:100%;position:relative;');
+    // }
   }
 
   function streamInitiationPixel() {
@@ -292,8 +312,28 @@ var T360 = (function(){
       streamStarted = true;
 
       // make fake OpenX ad call to get our impression pixel that we use for tracking "stream initiation"
-      get(openxPixelUrl, openxPixelSuccess, openxPixelError);
+      //get(openxPixelUrl, openxPixelSuccess, openxPixelError);
 
+      pixelTracker.src = pixelUrl + 'event_guid='+guid()+'&event_type=stream_init';
+
+      // fire custom pixel is set in config
+        if(customPixel) {
+          if (customPixel && customPixel.toUpperCase().indexOf("HTTP://") === 0) {
+            var fireCustomPixel = new Image();
+            fireCustomPixel.src = customPixel;
+            // //var rnd = Math.round(Math.random()*100000);
+            // customImg = document.createElement('img');
+            // customImg.style.visibility = "hidden";
+            // customImg.style.position = "absolute";
+            // customImg.width = "1";
+            // customImg.height = "1";
+            // customImg.src = customPixel;
+            // //img.src = customPixel + ((url.indexOf('?') > 0) ? '&' : '?') + 'r' + rnd + '=' + rnd;
+            // //var container = document.getElementById('imgContainer');
+            // //document.appendChild(img);
+            // player.container.parentElement.appendChild(customImg);
+          }
+        }
     }
   }
 
@@ -313,103 +353,103 @@ var T360 = (function(){
     }
   }
 
-  function openxPixelSuccess(respObj) {
-    //debug('OpenX pixel success');
-    fireOpenxPixel( xmlFromString(respObj) );
-  }
+  // function openxPixelSuccess(respObj) {
+  //   //debug('OpenX pixel success');
+  //   fireOpenxPixel( xmlFromString(respObj) );
+  // }
 
-  function fireOpenxPixel(xml) {
-    var impression = xml.getElementsByTagName("Impression"),
-      tribalImg,
-      customImg;
-    if(impression.length) {
-      if(impression[0].childNodes[0].data.toUpperCase().indexOf("HTTP://") === 0) {
-        tribalImg = document.createElement('img');
-        tribalImg.style.visibility = "hidden";
-        tribalImg.style.position = "absolute";
-        tribalImg.width = "1";
-        tribalImg.height = "1";
-        tribalImg.src = impression[0].childNodes[0].data;
-        player.container.parentElement.appendChild(tribalImg);
+  // function fireOpenxPixel(xml) {
+  //   var impression = xml.getElementsByTagName("Impression"),
+  //     tribalImg,
+  //     customImg;
+  //   if(impression.length) {
+  //     if(impression[0].childNodes[0].data.toUpperCase().indexOf("HTTP://") === 0) {
+  //       tribalImg = document.createElement('img');
+  //       tribalImg.style.visibility = "hidden";
+  //       tribalImg.style.position = "absolute";
+  //       tribalImg.width = "1";
+  //       tribalImg.height = "1";
+  //       tribalImg.src = impression[0].childNodes[0].data;
+  //       player.container.parentElement.appendChild(tribalImg);
 
-        // fire custom pixel is set in config
-        if(customPixel) {
-          if (customPixel && customPixel.toUpperCase().indexOf("HTTP://") === 0) {
-            //var rnd = Math.round(Math.random()*100000);
-            customImg = document.createElement('img');
-            customImg.style.visibility = "hidden";
-            customImg.style.position = "absolute";
-            customImg.width = "1";
-            customImg.height = "1";
-            customImg.src = customPixel;
-            //img.src = customPixel + ((url.indexOf('?') > 0) ? '&' : '?') + 'r' + rnd + '=' + rnd;
-            //var container = document.getElementById('imgContainer');
-            //document.appendChild(img);
-            player.container.parentElement.appendChild(customImg);
-          }
-        }
-      }
-    } else {
-      // there was no impression found, we need to make another fake OpenX ad call and get impression pixel
-      // TO DO: add a limit to the number of times it calls OpenX
-      get(openxPixelUrl, openxPixelSuccess, openxPixelError);
-    }
-  }
+  //       // fire custom pixel is set in config
+  //       if(customPixel) {
+  //         if (customPixel && customPixel.toUpperCase().indexOf("HTTP://") === 0) {
+  //           //var rnd = Math.round(Math.random()*100000);
+  //           customImg = document.createElement('img');
+  //           customImg.style.visibility = "hidden";
+  //           customImg.style.position = "absolute";
+  //           customImg.width = "1";
+  //           customImg.height = "1";
+  //           customImg.src = customPixel;
+  //           //img.src = customPixel + ((url.indexOf('?') > 0) ? '&' : '?') + 'r' + rnd + '=' + rnd;
+  //           //var container = document.getElementById('imgContainer');
+  //           //document.appendChild(img);
+  //           player.container.parentElement.appendChild(customImg);
+  //         }
+  //       }
+  //     }
+  //   } else {
+  //     // there was no impression found, we need to make another fake OpenX ad call and get impression pixel
+  //     // TO DO: add a limit to the number of times it calls OpenX
+  //     get(openxPixelUrl, openxPixelSuccess, openxPixelError);
+  //   }
+  // }
 
-  function xmlFromString(string) {
-    debug('xmlFromString');
-    if (!string)
-      return false;
-    var message = "";
-    if (window.DOMParser) { // all browsers, except IE before version 9
-      var parser = new DOMParser();
-      try {
-        xmlDoc = parser.parseFromString (string, "text/xml");
-      } catch (e) {
-        // if text is not well-formed,
-        // it raises an exception in IE from version 9
-        debug("XML parsing error.");
-        return false;
-      }
-    } else {  // Internet Explorer before version 9
-      if (typeof (ActiveXObject) == "undefined") {
-        debug("Cannot create XMLDocument object");
-        return false;
-      }
-      ids = ["Msxml2.DOMDocument.6.0", "Msxml2.DOMDocument.5.0", "Msxml2.DOMDocument.4.0", "Msxml2.DOMDocument.3.0", "MSXML2.DOMDocument", "MSXML.DOMDocument"];
-      for (var i = 0, il = ids.length; i < il; ++i) {
-        try {
-          xmlDoc = new ActiveXObject(ids[i]);
-          break;
-        } catch (e) {}
-      }
-      if (!xmlDoc) {
-        debug("Cannot create XMLDocument object");
-        return false;
-      }
-      xmlDoc.loadXML(string);
+  // function xmlFromString(string) {
+  //   debug('xmlFromString');
+  //   if (!string)
+  //     return false;
+  //   var message = "";
+  //   if (window.DOMParser) { // all browsers, except IE before version 9
+  //     var parser = new DOMParser();
+  //     try {
+  //       xmlDoc = parser.parseFromString (string, "text/xml");
+  //     } catch (e) {
+  //       // if text is not well-formed,
+  //       // it raises an exception in IE from version 9
+  //       debug("XML parsing error.");
+  //       return false;
+  //     }
+  //   } else {  // Internet Explorer before version 9
+  //     if (typeof (ActiveXObject) == "undefined") {
+  //       debug("Cannot create XMLDocument object");
+  //       return false;
+  //     }
+  //     ids = ["Msxml2.DOMDocument.6.0", "Msxml2.DOMDocument.5.0", "Msxml2.DOMDocument.4.0", "Msxml2.DOMDocument.3.0", "MSXML2.DOMDocument", "MSXML.DOMDocument"];
+  //     for (var i = 0, il = ids.length; i < il; ++i) {
+  //       try {
+  //         xmlDoc = new ActiveXObject(ids[i]);
+  //         break;
+  //       } catch (e) {}
+  //     }
+  //     if (!xmlDoc) {
+  //       debug("Cannot create XMLDocument object");
+  //       return false;
+  //     }
+  //     xmlDoc.loadXML(string);
 
-      if (xmlDoc.parseError && xmlDoc.parseError.errorCode !== 0) {
-        debug("XML Parsing Error: " + xmlDoc.parseError.reason
-            + " at line " + xmlDoc.parseError.line
-            + " at position " + xmlDoc.parseError.linepos);
-        return false;
-      } else {
-        if (xmlDoc.documentElement) {
-          if (xmlDoc.documentElement.nodeName == "parsererror") {
-            //console.log(xmlDoc.documentElement.childNodes[0].nodeValue);
-          }
-        } else {
-          debug("XML Parsing Error!");
-        }
-      }
-    }
-    return xmlDoc;
-  }
+  //     if (xmlDoc.parseError && xmlDoc.parseError.errorCode !== 0) {
+  //       debug("XML Parsing Error: " + xmlDoc.parseError.reason
+  //           + " at line " + xmlDoc.parseError.line
+  //           + " at position " + xmlDoc.parseError.linepos);
+  //       return false;
+  //     } else {
+  //       if (xmlDoc.documentElement) {
+  //         if (xmlDoc.documentElement.nodeName == "parsererror") {
+  //           //console.log(xmlDoc.documentElement.childNodes[0].nodeValue);
+  //         }
+  //       } else {
+  //         debug("XML Parsing Error!");
+  //       }
+  //     }
+  //   }
+  //   return xmlDoc;
+  // }
 
-  function openxPixelError() {
-    debug('OpenX pixel error');
-  }
+  // function openxPixelError() {
+  //   debug('OpenX pixel error');
+  // }
 
   function playlistMouseover() {
     if(!isAdPlaying){
@@ -438,6 +478,7 @@ var T360 = (function(){
 
   function playlistLoadError() {
     debug('playlistLoadError');
+    pixelTracker.src = pixelUrl + 'event_guid='+guid()+'&event_type=playlist_error';
   }
 
   function showNextVideo() {
@@ -468,12 +509,12 @@ var T360 = (function(){
   function adHasStarted() {
     debug('ad has started');
 
-    if(automute) {
-      if(!player.getMute()) {
-        player.setMute();
-        console.log('ad started, should be muted');
-      }
-    }
+    // if(automute) {
+    //   if(!player.getMute()) {
+    //     player.setMute();
+    //     //console.log('ad started, should be muted');
+    //   }
+    // }
 
     // turn off playlist mouseover display
     playlistMouseout();
@@ -567,6 +608,11 @@ var T360 = (function(){
         } // end if
       } // end try/catch
     } // end else
+  }
+
+  function guid(){
+    var _0x18a1x29 = function (){return Math["\x66\x6C\x6F\x6F\x72"](Math["\x72\x61\x6E\x64\x6F\x6D"]()*0x10000).toString(16);};
+    return (_0x18a1x29()+_0x18a1x29()+"\x2D"+_0x18a1x29()+"\x2D"+_0x18a1x29()+"\x2D"+_0x18a1x29()+"\x2D"+_0x18a1x29()+_0x18a1x29()+_0x18a1x29());
   }
 
   function addEvent(obj, evt, fnc) {

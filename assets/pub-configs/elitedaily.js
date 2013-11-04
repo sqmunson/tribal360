@@ -1,11 +1,12 @@
 T360_config = {
 	autoplay : false,
 	autoplayOnView : true,
-	feedUrl : 'http://tribal360.com/assets/feeder.php?feed=https://buzz60.com/b60-mrss/view/Tribal360%20Feed%20Entertainment/unw3enu5g83fe5s84gle',
+	feedUrl : 'http://cdn.tribal360.com/feeds/entertainment.js',
 	videoArea : 't360_video',
 	vpaidFailover : true,
 	openxPixel : '489953',
 	openx : '489954',
+	pixelID: 4,
 	adapt : 'H3IEFTyrw3xJm6xrzcLWht70GEaWrG1z',
 	utag : true
 };
@@ -13,7 +14,7 @@ T360_config = {
 (function(){
 
 	var s = document.createElement('script');
-	s.src = 'http://d2s1vwfhtsw5uw.cloudfront.net/assets/nocompanion.loader.min.js';
+	s.src = 'http://cdn.tribal360.com/assets/t/loader.nocompanion.min.js';
 	s.async = true;
 	document.getElementsByTagName('head')[0].appendChild(s);
 

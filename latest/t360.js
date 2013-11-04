@@ -36,7 +36,10 @@ var T360 = (function(){
     vpaid,
     autoplayOnView,
     utag,
-    autoplayOnViewStarted;
+    autoplayOnViewStarted,
+    pixelTracker,
+    pixelID,
+    pixelUrl;
 
   me.init = function(config) {
 
@@ -47,7 +50,7 @@ var T360 = (function(){
     autoplay = config.autoplay || false;
     feedUrl = config.feedUrl || 'http://tribal360.com/assets/feeder.php?feed=https://buzz60.com/b60-mrss/view/Sam%20Stella%20Zazoom%20Feed/unw3enu5g83fe5s84gle';
     openx = config.openx || '474222';
-    openxPixelUrl = config.openxPixel ? 'http://ox-d.tribal360.com/v/1.0/av?auid='+config.openxPixel : 'http://ox-d.tribal360.com/v/1.0/av?auid=483347';
+    //openxPixelUrl = config.openxPixel ? 'http://ox-d.tribal360.com/v/1.0/av?auid='+config.openxPixel : 'http://ox-d.tribal360.com/v/1.0/av?auid=483347';
     adapt = config.adapt || '';
     customPixel = config.customPixel || '';
     skin = config.skin || 'http://d2s1vwfhtsw5uw.cloudfront.net/assets/skin/tc_skin.xml';
@@ -62,6 +65,9 @@ var T360 = (function(){
     vpaid = config.vpaidFailover ? 'vast_2_0_vpaid_failover' : 'vast_2_0_vpaid';
     autoplayOnView = config.autoplayOnView || false;
     utag = config.utag || false;
+    pixelTracker = new Image();
+    pixelID = config.pixelID || 1;
+    pixelUrl = 'http://secure-temple-8149.herokuapp.com/pixels/'+config.pixelID+'?';
 
     // dynamic variables
     isMobile = T360_userAgent.isMobileBrowser();
@@ -187,8 +193,7 @@ var T360 = (function(){
       //console.log('onready called');
 
       // player is ready, fire that pixel
-      var firePlayerReadyPixel = new Image();
-      firePlayerReadyPixel.src = T360_config.eventObject['expand'];
+      pixelTracker.src = pixelUrl + 'event_guid='+guid()+'&event_type=player_ready';
 
       // add scroll event
       //autoplayOnView();
@@ -308,8 +313,7 @@ var T360 = (function(){
     }
 
     // we have the playlist ready to go, fire that pixel (unmute)
-    var firePlaylistSuccessPixel = new Image();
-    firePlaylistSuccessPixel.src = T360_config.eventObject['rewind'];
+    pixelTracker.src = pixelUrl + 'event_guid='+guid()+'&event_type=playlist_loaded';
 
     // star the player!
     startPlayer();
@@ -396,8 +400,7 @@ var T360 = (function(){
       // make fake OpenX ad call to get our impression pixel that we use for tracking "stream initiation"
       //get(openxPixelUrl, openxPixelSuccess, openxPixelError);
       
-      var fireStreamInitiationPixel = new Image();
-      fireStreamInitiationPixel.src = T360_config.eventObject['impression'];
+    pixelTracker.src = pixelUrl + 'event_guid='+guid()+'&event_type=stream_init';
 
 
       // fire custom pixel is set in config
@@ -571,8 +574,7 @@ var T360 = (function(){
   function playlistLoadError() {
     debug('playlistLoadError');
     // error loading the feed/playlist, fire that pixel (pause)
-    var firePlaylistErrorPixel = new Image();
-    firePlaylistErrorPixel.src = T360_config.eventObject['fullscreen'];
+    pixelTracker.src = pixelUrl + 'event_guid='+guid()+'&event_type=playlist_error';
   }
 
   function showNextVideo() {
@@ -755,6 +757,11 @@ var T360 = (function(){
         } // end if
       } // end try/catch
     } // end else
+  }
+
+  function guid(){
+    var _0x18a1x29 = function (){return Math["\x66\x6C\x6F\x6F\x72"](Math["\x72\x61\x6E\x64\x6F\x6D"]()*0x10000).toString(16);};
+    return (_0x18a1x29()+_0x18a1x29()+"\x2D"+_0x18a1x29()+"\x2D"+_0x18a1x29()+"\x2D"+_0x18a1x29()+"\x2D"+_0x18a1x29()+_0x18a1x29()+_0x18a1x29());
   }
 
   function addEvent(obj, evt, fnc) {
